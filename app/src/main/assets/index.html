@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#080d1b">
+<title>AETHER MINE • Lua Studio</title>
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#080d1b;--panel:#101a2d;--panel2:#14213a;--line:#243654;
+  --text:#edf4ff;--muted:#91a4c3;--cyan:#55e6ff;--blue:#638cff;
+  --green:#53e0a0;--red:#ff687e;--gold:#ffd36b;
+  --radius:18px;--safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+button,textarea{font:inherit}
+button{border:0;cursor:pointer;color:var(--text);-webkit-tap-highlight-color:transparent}
+#app{height:100dvh;min-height:100%;display:flex;flex-direction:column;overflow:hidden;background:radial-gradient(ellipse at 85% -10%,#1a3d65 0%,transparent 38%),var(--bg)}
+.topbar{padding:calc(10px + var(--safe-top)) 14px 10px;display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid #243654;background:#091225eF;flex-shrink:0}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.logo{width:40px;height:40px;border-radius:13px;display:grid;place-items:center;background:linear-gradient(145deg,#65f0ff,#547aff 65%,#8b69ff);color:#07101e;font-size:21px;font-weight:1000;box-shadow:0 0 25px #55e6ff35}
+.brand-title{font-size:14px;font-weight:900;letter-spacing:1.2px;white-space:nowrap}
+.brand-sub{font-size:10px;color:var(--muted);letter-spacing:1.5px;margin-top:2px}
+.status-pill{font-size:10px;border:1px solid var(--line);border-radius:30px;padding:7px 9px;color:var(--muted);white-space:nowrap}
+.status-pill.ok{color:var(--green);border-color:#286c59;background:#12352d}
+.status-pill.bad{color:var(--gold);border-color:#705a2a;background:#302713}
+main{flex:1;min-height:0;display:flex;flex-direction:column}
+.page{display:none;flex:1;min-height:0;flex-direction:column}
+.page.active{display:flex}
+.page-head{padding:15px 15px 10px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.page-title{font-size:19px;font-weight:850;letter-spacing:.2px}
+.page-hint{font-size:11px;color:var(--muted);margin-top:4px}
+.chip{font-size:10px;color:var(--cyan);border:1px solid #28546d;background:#10283b;border-radius:30px;padding:6px 9px}
+.toolbar{padding:0 14px 10px;display:flex;gap:8px;flex-wrap:wrap;flex-shrink:0}
+.btn{min-height:40px;padding:0 13px;border-radius:12px;background:#1a2943;border:1px solid #2a4164;font-size:12px;font-weight:750;display:inline-flex;align-items:center;justify-content:center;gap:7px}
+.btn:active{transform:scale(.97)}
+.btn.primary{background:linear-gradient(120deg,#36d9ed,#638cff);border:0;color:#071321;box-shadow:0 5px 20px #45d9ff25}
+.btn.stop{background:#3a1d2b;border-color:#793348;color:#ff9aaa}
+.btn.ghost{background:transparent}
+.btn.small{min-height:34px;padding:0 10px;font-size:11px}
+.editor-card{margin:0 12px;flex:1;min-height:0;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:#090f1d;display:flex;flex-direction:column;box-shadow:0 12px 35px #0005}
+.editor-head{height:43px;flex-shrink:0;padding:0 12px;display:flex;align-items:center;justify-content:space-between;background:#111d32;border-bottom:1px solid var(--line)}
+.file-label{font-size:11px;color:#c4d4ee;font-weight:700;display:flex;align-items:center;gap:8px}
+.file-dot{width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px var(--cyan)}
+.editor-tools{display:flex;gap:6px}
+.icon-btn{width:30px;height:29px;border-radius:8px;background:#1b2b46;border:1px solid #304565;color:#c9dcf8;font-weight:800}
+#code{display:block;resize:none;flex:1;min-height:0;width:100%;border:0;outline:0;background:#090f1d;color:#dceaff;padding:15px 15px 24px;font-family:"JetBrains Mono","SFMono-Regular",Consolas,monospace;font-size:14px;line-height:1.65;tab-size:4;white-space:pre;overflow:auto;caret-color:var(--cyan);-webkit-overflow-scrolling:touch}
+#code::selection{background:#315d8c}
+.editor-foot{flex-shrink:0;padding:8px 12px;display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:10px;border-top:1px solid #1d2c45}
+.bottom-note{padding:9px 15px calc(10px + var(--safe-bottom));font-size:10px;color:#7186a8;text-align:center}
+.run-top{padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-shrink:0}
+.run-title{font-size:18px;font-weight:850}
+.run-sub{font-size:10px;color:var(--muted);margin-top:3px}
+.run-actions{display:flex;gap:7px}
+.console-shell{margin:0 12px 12px;flex:1;min-height:0;border:1px solid var(--line);border-radius:var(--radius);background:#070d18;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 14px 40px #0006}
+.console-head{height:45px;flex-shrink:0;padding:0 13px;display:flex;align-items:center;justify-content:space-between;background:#111d32;border-bottom:1px solid var(--line)}
+.console-heading{font-size:12px;font-weight:800;display:flex;align-items:center;gap:8px}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green)}
+#output{flex:1;min-height:0;overflow:auto;padding:14px;color:#cde5d9;font:13px/1.7 "JetBrains Mono",Consolas,monospace;white-space:pre-wrap;overflow-wrap:anywhere;-webkit-overflow-scrolling:touch}
+.output-line{margin:0 0 3px}
+.output-line.error{color:#ff8292}
+.output-line.info{color:#91a9ce}
+.output-line.success{color:#65e6a9}
+.empty-state{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#7589a8;gap:9px}
+.empty-icon{font-size:34px;opacity:.75}
+.empty-state strong{font-size:13px;color:#b6c8e2}
+.empty-state span{font-size:11px}
+.run-foot{padding:9px 13px calc(10px + var(--safe-bottom));border-top:1px solid #1d2c45;display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:10px}
+.hidden{display:none!important}
+.toast{position:fixed;left:50%;bottom:calc(20px + var(--safe-bottom));transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#203652;border:1px solid #41638e;color:#eaf5ff;border-radius:12px;padding:10px 14px;font-size:12px;z-index:10;transition:.2s;max-width:90%;text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media (orientation:landscape){
+ .topbar{padding-top:calc(5px + var(--safe-top));padding-bottom:5px}
+ .logo{width:32px;height:32px}
+ .page-head{padding:8px 14px 6px}
+ .page-title{font-size:16px}
+ .toolbar{padding-bottom:7px}
+ .btn{min-height:34px}
+ .editor-head{height:36px}
+ #code{font-size:13px;padding:9px 13px;line-height:1.5}
+ .bottom-note{padding-top:5px;padding-bottom:calc(5px + var(--safe-bottom))}
+ .run-top{padding:7px 12px}
+ .console-head{height:36px}
+ .console-shell{margin-bottom:7px}
+}
+@media (max-width:380px){
+ .brand-title{font-size:12px}
+ .status-pill{font-size:9px;padding:6px 7px}
+ .btn{padding:0 10px;font-size:11px}
+ .toolbar{gap:6px}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">λ</div>
+      <div>
+        <div class="brand-title">AETHER MINE</div>
+        <div class="brand-sub">LUA INTERPRETER • 5.4.9</div>
+      </div>
+    </div>
+    <div id="engineStatus" class="status-pill">ENGINE CHECKING…</div>
+  </header>
+
+  <main>
+    <section id="editorPage" class="page active">
+      <div class="page-head">
+        <div>
+          <div class="page-title">Lua Code Editor</div>
+          <div class="page-hint">Write • Save • Run your Lua script</div>
+        </div>
+        <span class="chip">LUA 5.4.9</span>
+      </div>
+
+      <div class="toolbar">
+        <button class="btn primary" id="runBtn">▶ Run Code</button>
+        <button class="btn" id="saveBtn">▣ Save</button>
+        <button class="btn" id="sampleBtn">✦ Example</button>
+        <button class="btn ghost" id="clearCodeBtn">Clear</button>
+      </div>
+
+      <div class="editor-card">
+        <div class="editor-head">
+          <div class="file-label"><span class="file-dot"></span><span id="fileName">main.lua</span></div>
+          <div class="editor-tools">
+            <button class="icon-btn" id="fontDown" aria-label="Decrease font">A−</button>
+            <button class="icon-btn" id="fontUp" aria-label="Increase font">A+</button>
+          </div>
+        </div>
+        <textarea id="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" aria-label="Lua code editor"></textarea>
+        <div class="editor-foot">
+          <span id="lineInfo">1 line</span>
+          <span>UTF-8 · Lua 5.4.9</span>
+          <span id="saveState">Not saved</span>
+        </div>
+      </div>
+      <div class="bottom-note">AETHER MINE LUA STUDIO · Portrait & Landscape Ready</div>
+    </section>
+
+    <section id="runPage" class="page">
+      <div class="run-top">
+        <div>
+          <div class="run-title">Run / Output</div>
+          <div class="run-sub">Separate full-screen execution console</div>
+        </div>
+        <div class="run-actions">
+          <button class="btn small stop" id="stopBtn">■ Stop</button>
+          <button class="btn small" id="backBtn">← Editor</button>
+        </div>
+      </div>
+      <div class="console-shell">
+        <div class="console-head">
+          <div class="console-heading"><span class="live-dot"></span> OUTPUT CONSOLE</div>
+          <button class="btn small ghost" id="clearOutputBtn">⌫ Clear Output</button>
+        </div>
+        <div id="output" role="log" aria-live="polite">
+          <div class="empty-state" id="emptyOutput">
+            <div class="empty-icon">⌁</div>
+            <strong>Console is ready</strong>
+            <span>Tap Run Code in the editor to execute your Lua script.</span>
+          </div>
+        </div>
+        <div class="run-foot">
+          <span id="runState">READY</span>
+          <span id="runTime">No execution yet</span>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+<div id="toast" class="toast"></div>
+
+<script>
+(() => {
+  "use strict";
+  const $ = id => document.getElementById(id);
+  const starter = `-- AETHER MINE LUA INTERPRETER
+-- Lua 5.4.9
+
+print("Hello AETHER MINE!")
+
+local a = 25
+local b = 15
+
+print("Total:", a + b)
+
+for i = 1, 5 do
+    print("Lua:", i)
+end
+
+print("Script completed!")`;
+  const code = $("code");
+  let fontSize = 14;
+  let running = false;
+  let stopRequested = false;
+  let toastTimer;
+
+  function toast(message) {
+    const el = $("toast");
+    el.textContent = message;
+    el.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove("show"), 2300);
+  }
+  function showPage(page) {
+    $("editorPage").classList.toggle("active", page === "editor");
+    $("runPage").classList.toggle("active", page === "run");
+  }
+  function addOutput(text, type="normal") {
+    const output = $("output");
+    const empty = $("emptyOutput");
+    if (empty) empty.remove();
+    const line = document.createElement("div");
+    line.className = "output-line" + (type === "error" ? " error" : type === "info" ? " info" : type === "success" ? " success" : "");
+    line.textContent = text;
+    output.appendChild(line);
+    output.scrollTop = output.scrollHeight;
+  }
+  function clearOutput() {
+    $("output").innerHTML = `<div class="empty-state" id="emptyOutput"><div class="empty-icon">⌁</div><strong>Console cleared</strong><span>New output will appear here.</span></div>`;
+    $("runState").textContent = "READY";
+    $("runTime").textContent = "Waiting for execution";
+  }
+  function updateLineInfo() {
+    const count = code.value.split("\n").length;
+    $("lineInfo").textContent = count + (count === 1 ? " line" : " lines") + " · " + code.value.length + " chars";
+  }
+  function checkEngine() {
+    const pill = $("engineStatus");
+    try {
+      if (window.AetherLua && typeof window.AetherLua.run === "function") {
+        pill.textContent = "ENGINE CONNECTED";
+        pill.className = "status-pill ok";
+        if (typeof window.AetherLua.nativeEngineStatus === "function") {
+          try {
+            const s = window.AetherLua.nativeEngineStatus();
+            if (s) pill.title = String(s);
+          } catch (_) {}
+        }
+      } else {
+        pill.textContent = "BRIDGE NOT FOUND";
+        pill.className = "status-pill bad";
+        pill.title = "Check MainActivity.java: addJavascriptInterface(..., \"AetherLua\")";
+      }
+    } catch (_) {
+      pill.textContent = "ENGINE CHECK ERROR";
+      pill.className = "status-pill bad";
+    }
+  }
+  function saveCode() {
+    try {
+      localStorage.setItem("aetherLuaEditorCode", code.value);
+      $("saveState").textContent = "Saved ✓";
+      toast("Project saved on this device");
+    } catch (e) {
+      $("saveState").textContent = "Save failed";
+      toast("Save failed: device storage unavailable");
+    }
+  }
+  function runCode() {
+    if (running) {
+      toast("A script is already running");
+      return;
+    }
+    const source = code.value;
+    if (!source.trim()) {
+      toast("আগে Lua code লিখুন");
+      return;
+    }
+    showPage("run");
+    clearOutput();
+    addOutput("> Starting Lua 5.4.9…", "info");
+    $("runState").textContent = "RUNNING";
+    $("runTime").textContent = "Executing";
+    const bridge = window.AetherLua;
+    if (!bridge || typeof bridge.run !== "function") {
+      addOutput("ERROR: AetherLua JavaScript Bridge পাওয়া যায়নি।", "error");
+      addOutput('MainActivity.java-তে addJavascriptInterface(new LuaBridge(), "AetherLua") আছে কি না পরীক্ষা করুন।', "info");
+      $("runState").textContent = "BRIDGE ERROR";
+      return;
+    }
+    running = true;
+    stopRequested = false;
+    $("stopBtn").disabled = false;
+    const started = Date.now();
+    // The native Java bridge currently exposes a synchronous run(source) call.
+    // Android's current bridge must add a native cancellation method for true mid-run cancellation.
+    setTimeout(() => {
+      try {
+        if (stopRequested) {
+          addOutput("Run cancelled before native execution.", "info");
+          $("runState").textContent = "STOPPED";
+          return;
+        }
+        const result = bridge.run(source);
+        const elapsed = Date.now() - started;
+        if (result !== undefined && result !== null && String(result).length) {
+          const value = String(result);
+          value.split(/\r?\n/).forEach(line => addOutput(line));
+        } else {
+          addOutput("(No output returned by Lua engine)", "info");
+        }
+        $("runState").textContent = "FINISHED";
+        $("runTime").textContent = elapsed + " ms";
+        addOutput("✓ Execution finished", "success");
+      } catch (error) {
+        addOutput("Lua Error: " + (error && error.message ? error.message : String(error)), "error");
+        $("runState").textContent = "ERROR";
+        $("runTime").textContent = (Date.now() - started) + " ms";
+      } finally {
+        running = false;
+      }
+    }, 30);
+  }
+  function stopCode() {
+    if (!running) {
+      addOutput("No active script.", "info");
+      $("runState").textContent = "IDLE";
+      return;
+    }
+    stopRequested = true;
+    // Optional hook for a future native bridge implementation.
+    try {
+      if (window.AetherLua && typeof window.AetherLua.stop === "function") {
+        window.AetherLua.stop();
+        addOutput("Stop request sent to native engine.", "info");
+      } else {
+        addOutput("Stop requested. Current synchronous JNI run cannot be interrupted mid-execution; the native instruction limit still applies.", "info");
+      }
+    } catch (e) {
+      addOutput("Stop request failed: " + String(e), "error");
+    }
+    $("runState").textContent = "STOP REQUESTED";
+  }
+
+  $("runBtn").addEventListener("click", runCode);
+  $("saveBtn").addEventListener("click", saveCode);
+  $("sampleBtn").addEventListener("click", () => {
+    code.value = starter;
+    updateLineInfo();
+    $("saveState").textContent = "Example loaded";
+    toast("Lua example loaded");
+  });
+  $("clearCodeBtn").addEventListener("click", () => {
+    code.value = "";
+    updateLineInfo();
+    $("saveState").textContent = "Not saved";
+    code.focus();
+  });
+  $("fontUp").addEventListener("click", () => {
+    fontSize = Math.min(22, fontSize + 1);
+    code.style.fontSize = fontSize + "px";
+  });
+  $("fontDown").addEventListener("click", () => {
+    fontSize = Math.max(10, fontSize - 1);
+    code.style.fontSize = fontSize + "px";
+  });
+  $("backBtn").addEventListener("click", () => showPage("editor"));
+  $("stopBtn").addEventListener("click", stopCode);
+  $("clearOutputBtn").addEventListener("click", clearOutput);
+  code.addEventListener("input", () => {
+    updateLineInfo();
+    $("saveState").textContent = "Unsaved changes";
+  });
+  code.addEventListener("keydown", event => {
+    if (event.key === "Tab") {
+      event.preventDefault();
+      const start = code.selectionStart, end = code.selectionEnd;
+      code.setRangeText("    ", start, end, "end");
+      updateLineInfo();
+    }
+  });
+
+  try {
+    const saved = localStorage.getItem("aetherLuaEditorCode");
+    code.value = saved !== null ? saved : starter;
+    $("saveState").textContent = saved !== null ? "Saved project loaded" : "Starter project";
+  } catch (_) {
+    code.value = starter;
+  }
+  updateLineInfo();
+  checkEngine();
+  // Recheck after WebView has completed page setup.
+  setTimeout(checkEngine, 350);
+})();
+</script>
+</body>
+</html>
