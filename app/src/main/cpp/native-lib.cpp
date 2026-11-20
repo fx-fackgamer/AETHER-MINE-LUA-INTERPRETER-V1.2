@@ -4,9 +4,12 @@
 #include <sstream>
 #include <mutex>
 
-#include "lua.h"
-#include "lauxlib.h"
-#include "lualib.h"
+
+extern "C" {
+    #include "lua.h"
+    #include "lauxlib.h"
+    #include "lualib.h"
+}
 
 static std::mutex luaMutex;
 
