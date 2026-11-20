@@ -122,6 +122,7 @@ Java_com_aethermine_lua_MainActivity_runLua(
         "os",
         "debug",
         "package",
+        "require",
         "dofile",
         "loadfile"
     };
