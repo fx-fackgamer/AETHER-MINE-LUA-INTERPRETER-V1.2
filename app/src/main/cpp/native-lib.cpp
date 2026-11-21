@@ -14,9 +14,13 @@ static std::mutex luaMutex;
 static lua_State* gameState = nullptr;
 static std::ostringstream gameOutput;
 static std::ostringstream gameCommands;
-static int instructionsLeft = 120000;
 static const char* GAME_PREFIX = "@GAME\t";
 static const char* PRINT_PREFIX = "@PRINT\t";
+static const char* UI_PREFIX = "@UI\t";
+
+static float inputAxisX = 0.0f, inputAxisY = 0.0f;
+static float pointerX = 0.0f, pointerY = 0.0f;
+static bool pointerIsDown = false;
 
 static std::string escapeField(const std::string& s) {
     std::string out;
@@ -32,6 +36,9 @@ static std::string escapeField(const std::string& s) {
 
 static void emitGame(const std::string& command) {
     gameCommands << GAME_PREFIX << command << "\n";
+}
+static void emitUI(const std::string& command) {
+    gameCommands << UI_PREFIX << command << "\n";
 }
 
 static int capturePrint(lua_State* L) {
@@ -53,24 +60,20 @@ static void executionLimit(lua_State* L, lua_Debug*) {
     *remaining -= 1000;
     if (*remaining <= 0) luaL_error(L, "Execution limit exceeded.");
 }
-
 static void setInstructionBudget(lua_State* L) {
-    instructionsLeft = 120000;
-    *static_cast<int*>(lua_getextraspace(L)) = instructionsLeft;
+    *static_cast<int*>(lua_getextraspace(L)) = 120000;
     lua_sethook(L, executionLimit, LUA_MASKCOUNT, 1000);
 }
 
 static int gameCreate(lua_State* L) {
-    int w = static_cast<int>(luaL_checkinteger(L, 1));
-    int h = static_cast<int>(luaL_checkinteger(L, 2));
+    int w = (int)luaL_checkinteger(L, 1), h = (int)luaL_checkinteger(L, 2);
     if (w < 1 || w > 4096 || h < 1 || h > 4096)
         return luaL_error(L, "game.create width/height must be 1..4096");
     emitGame("create\t" + std::to_string(w) + "\t" + std::to_string(h));
     return 0;
 }
 static int gameBackground(lua_State* L) {
-    const char* c = luaL_checkstring(L, 1);
-    emitGame("background\t" + escapeField(c));
+    emitGame("background\t" + escapeField(luaL_checkstring(L, 1)));
     return 0;
 }
 static int gameRect(lua_State* L) {
@@ -99,32 +102,96 @@ static int gameLine(lua_State* L) {
 static int gameText(lua_State* L) {
     const char* t=luaL_checkstring(L,1);
     double x=luaL_checknumber(L,2), y=luaL_checknumber(L,3);
-    int size=static_cast<int>(luaL_optinteger(L,4,24));
+    int size=(int)luaL_optinteger(L,4,24);
     const char* c=luaL_optstring(L,5,"#ffffff");
     emitGame("text\t"+escapeField(t)+"\t"+std::to_string(x)+"\t"+
              std::to_string(y)+"\t"+std::to_string(size)+"\t"+escapeField(c));
     return 0;
 }
-static int gameKey(lua_State* L) {
-    const char* key = luaL_checkstring(L, 1);
-    lua_getglobal(L, "__aether_keys");
-    if (!lua_istable(L, -1)) { lua_pop(L,1); lua_pushboolean(L,0); return 1; }
+
+static bool tableFlag(lua_State* L, const char* tableName, const char* key) {
+    lua_getglobal(L, tableName);
+    if (!lua_istable(L, -1)) { lua_pop(L,1); return false; }
     lua_getfield(L, -1, key);
-    bool down = lua_toboolean(L, -1) != 0;
-    lua_pop(L, 2);
-    lua_pushboolean(L, down);
+    bool value = lua_toboolean(L, -1) != 0;
+    lua_pop(L,2);
+    return value;
+}
+static int inputDown(lua_State* L) {
+    const char* key = luaL_checkstring(L,1);
+    lua_pushboolean(L, tableFlag(L, "__aether_keys", key));
     return 1;
 }
+static int inputAction(lua_State* L) {
+    const char* id = luaL_checkstring(L,1);
+    lua_pushboolean(L, tableFlag(L, "__aether_actions", id));
+    return 1;
+}
+static int inputAxisX(lua_State* L) { lua_pushnumber(L,inputAxisX); return 1; }
+static int inputAxisY(lua_State* L) { lua_pushnumber(L,inputAxisY); return 1; }
+static int inputPointerX(lua_State* L) { lua_pushnumber(L,pointerX); return 1; }
+static int inputPointerY(lua_State* L) { lua_pushnumber(L,pointerY); return 1; }
+static int inputPointerDown(lua_State* L) { lua_pushboolean(L,pointerIsDown); return 1; }
+
+static int uiPanel(lua_State* L) {
+    const char* id=luaL_checkstring(L,1);
+    double x=luaL_checknumber(L,2), y=luaL_checknumber(L,3);
+    double w=luaL_checknumber(L,4), h=luaL_checknumber(L,5);
+    const char* color=luaL_optstring(L,6,"#202838");
+    emitUI("panel\t"+escapeField(id)+"\t"+std::to_string(x)+"\t"+
+           std::to_string(y)+"\t"+std::to_string(w)+"\t"+std::to_string(h)+
+           "\t"+escapeField(color));
+    return 0;
+}
+static int uiText(lua_State* L) {
+    const char* id=luaL_checkstring(L,1);
+    const char* value=luaL_checkstring(L,2);
+    double x=luaL_checknumber(L,3), y=luaL_checknumber(L,4);
+    int size=(int)luaL_optinteger(L,5,20);
+    const char* color=luaL_optstring(L,6,"#ffffff");
+    emitUI("text\t"+escapeField(id)+"\t"+escapeField(value)+"\t"+
+           std::to_string(x)+"\t"+std::to_string(y)+"\t"+
+           std::to_string(size)+"\t"+escapeField(color));
+    return 0;
+}
+static int uiButton(lua_State* L) {
+    const char* id=luaL_checkstring(L,1);
+    const char* label=luaL_checkstring(L,2);
+    double x=luaL_checknumber(L,3), y=luaL_checknumber(L,4);
+    double w=luaL_checknumber(L,5), h=luaL_checknumber(L,6);
+    emitUI("button\t"+escapeField(id)+"\t"+escapeField(label)+"\t"+
+           std::to_string(x)+"\t"+std::to_string(y)+"\t"+
+           std::to_string(w)+"\t"+std::to_string(h));
+    lua_pushboolean(L, tableFlag(L, "__aether_actions", id));
+    return 1;
+}
+
 static void registerGameApi(lua_State* L) {
     lua_newtable(L);
-    lua_pushcfunction(L, gameCreate); lua_setfield(L,-2,"create");
-    lua_pushcfunction(L, gameBackground); lua_setfield(L,-2,"background");
-    lua_pushcfunction(L, gameRect); lua_setfield(L,-2,"rect");
-    lua_pushcfunction(L, gameCircle); lua_setfield(L,-2,"circle");
-    lua_pushcfunction(L, gameLine); lua_setfield(L,-2,"line");
-    lua_pushcfunction(L, gameText); lua_setfield(L,-2,"text");
-    lua_pushcfunction(L, gameKey); lua_setfield(L,-2,"key");
+    lua_pushcfunction(L,gameCreate); lua_setfield(L,-2,"create");
+    lua_pushcfunction(L,gameBackground); lua_setfield(L,-2,"background");
+    lua_pushcfunction(L,gameRect); lua_setfield(L,-2,"rect");
+    lua_pushcfunction(L,gameCircle); lua_setfield(L,-2,"circle");
+    lua_pushcfunction(L,gameLine); lua_setfield(L,-2,"line");
+    lua_pushcfunction(L,gameText); lua_setfield(L,-2,"text");
+    lua_pushcfunction(L,inputDown); lua_setfield(L,-2,"key");
     lua_setglobal(L,"game");
+
+    lua_newtable(L);
+    lua_pushcfunction(L,inputDown); lua_setfield(L,-2,"down");
+    lua_pushcfunction(L,inputAction); lua_setfield(L,-2,"action");
+    lua_pushcfunction(L,inputAxisX); lua_setfield(L,-2,"axisX");
+    lua_pushcfunction(L,inputAxisY); lua_setfield(L,-2,"axisY");
+    lua_pushcfunction(L,inputPointerX); lua_setfield(L,-2,"pointerX");
+    lua_pushcfunction(L,inputPointerY); lua_setfield(L,-2,"pointerY");
+    lua_pushcfunction(L,inputPointerDown); lua_setfield(L,-2,"pointerDown");
+    lua_setglobal(L,"input");
+
+    lua_newtable(L);
+    lua_pushcfunction(L,uiPanel); lua_setfield(L,-2,"panel");
+    lua_pushcfunction(L,uiText); lua_setfield(L,-2,"text");
+    lua_pushcfunction(L,uiButton); lua_setfield(L,-2,"button");
+    lua_setglobal(L,"ui");
 }
 static void restrictLibraries(lua_State* L) {
     luaL_openlibs(L);
@@ -133,7 +200,7 @@ static void restrictLibraries(lua_State* L) {
     lua_pushcfunction(L,capturePrint); lua_setglobal(L,"print");
     registerGameApi(L);
 }
-static void setKeys(lua_State* L, const std::string& csv) {
+static void setCsvTable(lua_State* L, const char* globalName, const std::string& csv) {
     lua_newtable(L);
     size_t start=0;
     while (start < csv.size()) {
@@ -143,7 +210,7 @@ static void setKeys(lua_State* L, const std::string& csv) {
         if (!key.empty()) { lua_pushboolean(L,1); lua_setfield(L,-2,key.c_str()); }
         start=end+1;
     }
-    lua_setglobal(L,"__aether_keys");
+    lua_setglobal(L,globalName);
 }
 static bool callLuaFunction(lua_State* L, const char* name) {
     lua_getglobal(L,name);
@@ -167,12 +234,19 @@ static std::string takeResult() {
 static jstring toJava(JNIEnv* env,const std::string& s) {
     return env->NewStringUTF(s.c_str());
 }
+static void applyInput(const std::string& keys, const std::string& actions,
+                       float ax, float ay, float px, float py, bool down) {
+    inputAxisX=ax; inputAxisY=ay; pointerX=px; pointerY=py; pointerIsDown=down;
+    if (gameState) {
+        setCsvTable(gameState,"__aether_keys",keys);
+        setCsvTable(gameState,"__aether_actions",actions);
+    }
+}
 
 extern "C" JNIEXPORT jstring JNICALL
 Java_com_aethermine_lua_MainActivity_nativeEngineStatus(JNIEnv* env,jclass) {
-    return env->NewStringUTF("AETHER MINE Lua 5.4 Native Engine Ready");
+    return env->NewStringUTF("AETHER MINE Lua 5.4 V2.1 Input/UI API Ready");
 }
-
 extern "C" JNIEXPORT jstring JNICALL
 Java_com_aethermine_lua_MainActivity_runLua(JNIEnv* env,jclass,jstring source) {
     if (!source) return env->NewStringUTF("ERROR: Empty source.");
@@ -182,49 +256,48 @@ Java_com_aethermine_lua_MainActivity_runLua(JNIEnv* env,jclass,jstring source) {
     std::lock_guard<std::mutex> lock(luaMutex);
     lua_State* L=luaL_newstate();
     if (!L) return env->NewStringUTF("ERROR: Cannot create Lua state.");
-    gameOutput.str(""); gameOutput.clear();
-    gameCommands.str(""); gameCommands.clear();
-    restrictLibraries(L);
-    setInstructionBudget(L);
+    gameOutput.str(""); gameOutput.clear(); gameCommands.str(""); gameCommands.clear();
+    restrictLibraries(L); setInstructionBudget(L);
     int status=luaL_loadbuffer(L,code.c_str(),code.size(),"AETHER_MINE");
     if (status==LUA_OK) status=lua_pcall(L,0,LUA_MULTRET,0);
+    std::string result;
     if (status!=LUA_OK) {
         const char* e=lua_tostring(L,-1);
-        gameOutput << PRINT_PREFIX << "ERROR: "
-                   << escapeField(e?e:"Unknown Lua Error") << "\\n";
-    }
-    std::string captured=gameOutput.str();
-    std::string result;
-    size_t pos=0;
-    while (pos<captured.size()) {
-        size_t end=captured.find('\\n',pos);
-        if (end==std::string::npos) end=captured.size();
-        std::string line=captured.substr(pos,end-pos);
-        if (line.rfind(PRINT_PREFIX,0)==0) {
-            if (!result.empty()) result += "\\n";
-            result += line.substr(std::string(PRINT_PREFIX).size());
+        result=std::string("ERROR: ")+(e?e:"Unknown Lua Error");
+        lua_pop(L,1);
+    } else {
+        std::string captured=gameOutput.str();
+        size_t pos=0;
+        while (pos<captured.size()) {
+            size_t end=captured.find('\n',pos);
+            if (end==std::string::npos) end=captured.size();
+            std::string line=captured.substr(pos,end-pos);
+            if (line.rfind(PRINT_PREFIX,0)==0) {
+                if (!result.empty()) result += "\n";
+                result += line.substr(std::string(PRINT_PREFIX).size());
+            }
+            pos=end+1;
         }
-        pos=end+1;
+        if (result.empty()) result="Program finished successfully.";
     }
-    if (result.empty() && status==LUA_OK) result="Program finished successfully.";
-    lua_close(L);
-    gameOutput.str(""); gameOutput.clear();
+    lua_close(L); gameOutput.str(""); gameOutput.clear();
     return toJava(env,result);
 }
-
 extern "C" JNIEXPORT jstring JNICALL
 Java_com_aethermine_lua_MainActivity_runLuaGame(JNIEnv* env,jclass,jstring source) {
-    if (!source) return env->NewStringUTF("ERROR: Empty game source.");
+    if (!source) return env->NewStringUTF("@PRINT\tERROR: Empty game source.\n");
     const char* chars=env->GetStringUTFChars(source,nullptr);
-    if (!chars) return env->NewStringUTF("ERROR: Cannot read game source.");
+    if (!chars) return env->NewStringUTF("@PRINT\tERROR: Cannot read source.\n");
     std::string code(chars); env->ReleaseStringUTFChars(source,chars);
     std::lock_guard<std::mutex> lock(luaMutex);
     if (gameState) { lua_close(gameState); gameState=nullptr; }
     gameOutput.str(""); gameOutput.clear(); gameCommands.str(""); gameCommands.clear();
+    inputAxisX=inputAxisY=pointerX=pointerY=0; pointerIsDown=false;
     gameState=luaL_newstate();
     if (!gameState) return env->NewStringUTF("@PRINT\tERROR: Cannot create Lua game state.\n");
     restrictLibraries(gameState);
-    registerGameApi(gameState);
+    setCsvTable(gameState,"__aether_keys","");
+    setCsvTable(gameState,"__aether_actions","");
     setInstructionBudget(gameState);
     int status=luaL_loadbuffer(gameState,code.c_str(),code.size(),"AETHER_MINE_GAME");
     if (status==LUA_OK) status=lua_pcall(gameState,0,0,0);
@@ -238,23 +311,30 @@ Java_com_aethermine_lua_MainActivity_runLuaGame(JNIEnv* env,jclass,jstring sourc
     }
     return toJava(env,takeResult());
 }
-
 extern "C" JNIEXPORT jstring JNICALL
 Java_com_aethermine_lua_MainActivity_gameFrame(JNIEnv* env,jclass,jstring keys) {
     std::string keyText;
-    if (keys) {
-        const char* p=env->GetStringUTFChars(keys,nullptr);
-        if (p) { keyText=p; env->ReleaseStringUTFChars(keys,p); }
-    }
+    if (keys) { const char* p=env->GetStringUTFChars(keys,nullptr); if (p) { keyText=p; env->ReleaseStringUTFChars(keys,p); } }
     std::lock_guard<std::mutex> lock(luaMutex);
     if (!gameState) return env->NewStringUTF("@PRINT\tERROR: No game is running.\n");
     gameOutput.str(""); gameOutput.clear(); gameCommands.str(""); gameCommands.clear();
-    setKeys(gameState,keyText);
-    callLuaFunction(gameState,"update");
-    callLuaFunction(gameState,"draw");
+    applyInput(keyText,"",0,0,0,0,false);
+    callLuaFunction(gameState,"update"); callLuaFunction(gameState,"draw");
     return toJava(env,takeResult());
 }
-
+extern "C" JNIEXPORT jstring JNICALL
+Java_com_aethermine_lua_MainActivity_gameFrameInput(JNIEnv* env,jclass,jstring keys,
+        jfloat ax,jfloat ay,jfloat px,jfloat py,jboolean down,jstring actions) {
+    std::string keyText, actionText;
+    if (keys) { const char* p=env->GetStringUTFChars(keys,nullptr); if(p){keyText=p;env->ReleaseStringUTFChars(keys,p);} }
+    if (actions) { const char* p=env->GetStringUTFChars(actions,nullptr); if(p){actionText=p;env->ReleaseStringUTFChars(actions,p);} }
+    std::lock_guard<std::mutex> lock(luaMutex);
+    if (!gameState) return env->NewStringUTF("@PRINT\tERROR: No game is running.\n");
+    gameOutput.str(""); gameOutput.clear(); gameCommands.str(""); gameCommands.clear();
+    applyInput(keyText,actionText,ax,ay,px,py,down==JNI_TRUE);
+    callLuaFunction(gameState,"update"); callLuaFunction(gameState,"draw");
+    return toJava(env,takeResult());
+}
 extern "C" JNIEXPORT void JNICALL
 Java_com_aethermine_lua_MainActivity_stopLuaGame(JNIEnv*,jclass) {
     std::lock_guard<std::mutex> lock(luaMutex);
