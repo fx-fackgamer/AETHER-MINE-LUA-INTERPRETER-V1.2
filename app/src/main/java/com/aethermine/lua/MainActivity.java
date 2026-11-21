@@ -6,20 +6,21 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.JavascriptInterface;
-import android.view.View;
 import android.view.WindowManager;
 
 public class MainActivity extends Activity {
     private WebView webView;
 
-    static {
-        System.loadLibrary("aetherlua");
-    }
+    static { System.loadLibrary("aetherlua"); }
 
     public static native String runLua(String source);
     public static native String nativeEngineStatus();
     public static native String runLuaGame(String source);
     public static native String gameFrame(String keys);
+    public static native String gameFrameInput(
+            String keys, float axisX, float axisY,
+            float pointerX, float pointerY, boolean pointerDown,
+            String actions);
     public static native void stopLuaGame();
 
     public class LuaBridge {
@@ -29,28 +30,29 @@ public class MainActivity extends Activity {
             if (source.length() > 200000) return "ERROR: Script too large.";
             return runLua(source);
         }
-
         @JavascriptInterface
         public String nativeEngineStatus() {
             return MainActivity.nativeEngineStatus();
         }
-
         @JavascriptInterface
         public String runGame(String source) {
             if (source == null) source = "";
-            if (source.length() > 200000) return "@PRINT\tERROR: Game script too large.\n";
+            if (source.length() > 200000)
+                return "@PRINT\tERROR: Game script too large.\n";
             return runLuaGame(source);
         }
-
         @JavascriptInterface
         public String frame(String keys) {
             return gameFrame(keys == null ? "" : keys);
         }
-
         @JavascriptInterface
-        public void stopGame() {
-            stopLuaGame();
+        public String frameInput(String keys, float axisX, float axisY,
+                float pointerX, float pointerY, boolean pointerDown, String actions) {
+            return gameFrameInput(keys == null ? "" : keys, axisX, axisY,
+                    pointerX, pointerY, pointerDown, actions == null ? "" : actions);
         }
+        @JavascriptInterface
+        public void stopGame() { stopLuaGame(); }
     }
 
     @Override
@@ -75,7 +77,10 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onDestroy() {
-        if (webView != null) webView.destroy();
+        if (webView != null) {
+            webView.destroy();
+            webView = null;
+        }
         super.onDestroy();
     }
 }
