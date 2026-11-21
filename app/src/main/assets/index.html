@@ -3,97 +3,126 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#080d1b">
-<title>AETHER MINE • Lua Game Studio V2.0</title>
+<meta name="theme-color" content="#ffffff">
+<title>AETHER MINE LUA GAME STUDIO V2.1</title>
 <style>
-:root{color-scheme:dark;--bg:#080d1b;--panel:#101a2d;--line:#243654;--text:#edf4ff;--muted:#91a4c3;--cyan:#55e6ff;--green:#53e0a0;--red:#ff687e}
-*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:system-ui,sans-serif}body{height:100vh;height:100dvh}button,input,textarea{font:inherit}button{border:1px solid #304565;border-radius:10px;background:#1a2943;color:var(--text);padding:9px 12px;font-weight:700;min-height:38px}button:active{filter:brightness(1.25)}button.primary{background:linear-gradient(120deg,#36d9ed,#638cff);color:#071321;border:0}button.stop{background:#3a1d2b;color:#ff9aaa}button.danger{color:#ff9aaa;border-color:#713447}.top{flex:none;min-height:48px;padding:7px 12px;background:#091225;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:8px}.brand{font-weight:900;letter-spacing:1px}.sub{font-size:10px;color:var(--muted)}#status{font-size:10px;color:var(--green);text-align:right}#app{height:100%;height:100dvh;display:flex;flex-direction:column;min-height:0}nav{display:flex;gap:6px;padding:7px;flex:none;background:#0b1425;border-bottom:1px solid var(--line)}nav button{flex:1;min-width:0;padding:8px 4px;font-size:12px}.page{display:none;flex:1;min-height:0;min-width:0;flex-direction:column}.page.active{display:flex}.toolbar{display:flex;gap:7px;flex-wrap:wrap;padding:9px 10px 7px;flex:none}.project-name{margin:0 10px 7px;padding:8px 10px;border:1px solid var(--line);border-radius:9px;background:#0c1526;color:var(--text);width:calc(100% - 20px);outline:none}#code{margin:0 10px 10px;flex:1;min-height:0;width:calc(100% - 20px);resize:none;border:1px solid var(--line);border-radius:12px;background:#090f1d;color:#dceaff;padding:12px;font:13px/1.55 monospace;white-space:pre;tab-size:4;outline:none;overflow:auto}#saveList{padding:10px;overflow:auto;min-height:0}.saved-item{display:flex;align-items:center;gap:8px;padding:10px;margin-bottom:8px;border:1px solid var(--line);border-radius:11px;background:#101a2d}.saved-open{flex:1;text-align:left;min-width:0;overflow-wrap:anywhere}.saved-meta{font-size:10px;color:var(--muted);display:block;font-weight:400;margin-top:3px}.empty{padding:24px 12px;text-align:center;color:var(--muted);font-size:13px}.page-head{padding:8px 10px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex:none}.page-head strong{font-size:13px;letter-spacing:.5px}.page-head .actions{display:flex;gap:6px}.page-head button{padding:7px 10px}.preview-wrap{flex:1;min-height:0;min-width:0;display:flex;align-items:center;justify-content:center;padding:8px;background:#050a13;overflow:hidden}#gameCanvas{display:block;width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain;background:#101a2d;border:1px solid var(--line);border-radius:8px}#console{flex:1;min-height:0;overflow:auto;background:#070d18;border:1px solid var(--line);border-radius:10px;margin:0 10px 10px;padding:10px;color:#bfe7d4;font:12px/1.6 monospace;white-space:pre-wrap;overflow-wrap:anywhere}.console-tools{display:flex;gap:7px;padding:8px 10px;flex:none}#toast{position:fixed;z-index:20;bottom:14px;left:50%;transform:translateX(-50%);max-width:90vw;background:#203652;padding:9px 13px;border-radius:10px;font-size:12px;display:none;box-shadow:0 5px 20px #0008}.muted{color:var(--muted)}
-@media(orientation:landscape){.top{min-height:38px;padding:4px 10px}.sub{font-size:9px}nav{padding:4px 7px}nav button{min-height:32px;padding:5px 3px}.toolbar{padding:6px 9px}.toolbar button{min-height:32px;padding:6px 9px}#code{font-size:12px}.page-head{padding:4px 8px}.preview-wrap{padding:4px}}
+:root{--bg:#f5f7fb;--paper:#fff;--ink:#172033;--muted:#718096;--line:#e2e8f0;--blue:#2864dc;--blue2:#eaf1ff;--green:#14845c;--red:#c43b50;--dark:#101827}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+body{height:100dvh}button,input,textarea{font:inherit}button{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:11px;padding:10px 13px;min-height:40px;font-weight:650;cursor:pointer}button:active{transform:scale(.98)}button.primary{background:var(--blue);border-color:var(--blue);color:#fff}button.soft{background:var(--blue2);border-color:#d7e4ff;color:#2458bd}button.danger{color:var(--red);border-color:#f0cbd1;background:#fff8f9}
+#app{height:100%;height:100dvh;display:flex;flex-direction:column;min-height:0}.top{height:58px;flex:none;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 15px}.brand{font-weight:900;letter-spacing:.7px;font-size:15px}.brand small{display:block;font-size:9px;color:var(--muted);letter-spacing:1.5px;margin-top:2px}.status{font-size:10px;color:var(--green);font-weight:700}
+.screen{display:none;flex:1;min-height:0;min-width:0;flex-direction:column;overflow:hidden}.screen.active{display:flex}
+.home{background:#fff;justify-content:center;align-items:center;padding:24px;gap:18px}.hero{text-align:center;margin-bottom:12px}.hero-mark{width:66px;height:66px;border-radius:22px;background:#edf3ff;color:var(--blue);display:grid;place-items:center;font-size:32px;font-weight:900;margin:0 auto 12px}.hero h1{font-size:23px;margin:0;letter-spacing:1px}.hero p{font-size:11px;color:var(--muted);letter-spacing:2px;margin:6px 0}.home-option{width:min(100%,390px);min-height:86px;display:flex;align-items:center;gap:15px;text-align:left;padding:17px;border-radius:17px;border:1px solid var(--line);box-shadow:0 7px 24px #1c37600b}.home-option .ico{width:48px;height:48px;border-radius:14px;background:var(--blue2);color:var(--blue);display:grid;place-items:center;font-size:23px}.home-option strong{display:block;font-size:15px}.home-option small{display:block;color:var(--muted);font-size:11px;margin-top:4px}
+.head{height:48px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 12px;background:#fff;border-bottom:1px solid var(--line);gap:8px}.head strong{font-size:13px}.head .right{display:flex;gap:6px}.head button{min-height:34px;padding:6px 10px;font-size:11px}
+.tabs{display:flex;gap:5px;overflow:auto;padding:7px;background:#fff;border-bottom:1px solid var(--line);flex:none}.tabs button{white-space:nowrap;min-height:34px;padding:6px 11px;font-size:11px}.tabs button.active{background:var(--blue2);color:var(--blue);border-color:#cbdcff}
+.toolbar{display:flex;gap:6px;flex-wrap:wrap;padding:8px 10px;background:#fff;flex:none}.toolbar button{min-height:34px;padding:6px 10px;font-size:11px}
+.name-row{display:flex;gap:7px;padding:7px 10px;background:#fff;flex:none}.name-row input{min-width:0;flex:1;border:1px solid var(--line);border-radius:10px;padding:9px 11px;outline:none;background:#fbfcff;color:var(--ink)}
+.editor-shell{display:flex;flex:1;min-height:0;margin:0 10px 10px;border:1px solid #263750;border-radius:12px;overflow:hidden;background:#0e1726}.gutter{width:38px;flex:none;padding:11px 5px;text-align:right;overflow:hidden;color:#73849d;background:#111e30;font:12px/1.55 ui-monospace,monospace;white-space:pre}.code{flex:1;min-width:0;min-height:0;resize:none;border:0;outline:none;background:#0e1726;color:#e2edff;padding:11px;font:13px/1.55 ui-monospace,monospace;white-space:pre;tab-size:4;overflow:auto}
+.panel{padding:12px;overflow:auto;min-height:0}.project-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:13px;margin-bottom:9px;box-shadow:0 4px 16px #1c376008}.project-title{font-weight:800;font-size:14px;overflow-wrap:anywhere}.project-meta{font-size:10px;color:var(--muted);margin:4px 0 10px}.actions{display:flex;gap:6px;flex-wrap:wrap}.actions button{font-size:10px;min-height:32px;padding:6px 10px}.empty{padding:35px 14px;text-align:center;color:var(--muted);font-size:12px}
+.preview{flex:1;min-height:0;background:#101827;display:flex;align-items:center;justify-content:center;padding:7px}#gameCanvas{display:block;width:100%;height:100%;object-fit:contain;background:#172337;border-radius:8px}
+.log{flex:1;min-height:0;margin:10px;border-radius:11px;background:#101827;color:#d3f4df;padding:12px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.6 ui-monospace,monospace}
+.modal-back{display:none;position:fixed;inset:0;z-index:20;background:#17203366;align-items:flex-end;justify-content:center}.modal-back.show{display:flex}.modal{width:100%;max-height:88%;overflow:auto;background:#fff;border-radius:20px 20px 0 0;padding:16px;box-shadow:0 -10px 40px #0002}.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.modal-head strong{font-size:15px}.choice-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.choice{padding:13px;text-align:left;min-height:65px}.choice b{display:block;font-size:13px}.choice small{display:block;color:var(--muted);font-size:10px;margin-top:4px}.setting-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--line);gap:10px;font-size:12px}.setting-row input{width:100px}.toast{position:fixed;z-index:30;bottom:16px;left:50%;transform:translateX(-50%);background:#172033;color:#fff;border-radius:10px;padding:10px 14px;font-size:11px;display:none;max-width:90vw}
+@media(orientation:landscape){.top{height:44px}.brand{font-size:13px}.home{gap:10px}.hero{margin-bottom:2px}.hero-mark{width:48px;height:48px;font-size:25px}.hero h1{font-size:19px}.home-option{min-height:68px;padding:10px}.home-option .ico{width:40px;height:40px}.head{height:40px}.toolbar{padding:5px 8px}.name-row{padding:5px 8px}.editor-shell{margin:0 8px 8px}.code,.gutter{font-size:12px}.modal-back{align-items:center}.modal{width:min(560px,85vw);border-radius:18px;max-height:90%}}
 </style>
 </head>
 <body>
 <div id="app">
- <header class="top"><div><div class="brand">λ AETHER MINE</div><div class="sub">LUA GAME STUDIO • V2.0</div></div><div id="status">ENGINE CHECK…</div></header>
- <nav>
-  <button id="editorTab">Editor</button><button id="savedTab">Save Done</button><button id="gameTab">Preview / Run</button><button id="consoleTab">Console</button>
- </nav>
- <section id="editorPage" class="page active">
-  <div class="toolbar"><button class="primary" id="runBtn">▶ Run</button><button id="saveBtn">▣ Save</button><button id="sampleBtn">✦ Example</button><button id="clearBtn">Clear</button></div>
-  <input id="projectName" class="project-name" maxlength="60" placeholder="Project / App name লিখুন" autocomplete="off">
-  <textarea id="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off"></textarea>
- </section>
- <section id="savedPage" class="page"><div class="page-head"><strong>SAVED PROJECTS</strong><button id="savedRefresh">↻ Refresh</button></div><div id="saveList"></div></section>
- <section id="gamePage" class="page">
-  <div class="page-head"><strong>PREVIEW / RUN</strong><div class="actions"><button id="stopBtn" class="stop">■ Stop</button><button id="previewConsoleBtn">Console</button></div></div>
-  <div class="preview-wrap"><canvas id="gameCanvas" width="800" height="450"></canvas></div>
- </section>
- <section id="consolePage" class="page"><div class="page-head"><strong>CONSOLE / ERROR LOG</strong><button id="clearLogBtn">Clear Log</button></div><div id="console">AETHER MINE Lua Game Studio V2.0 ready.</div><div class="console-tools"><button id="consoleEditorBtn">← Editor</button><button id="consolePreviewBtn">Preview</button></div></section>
-</div><div id="toast"></div>
+<header class="top"><div class="brand">λ AETHER MINE <small>LUA GAME STUDIO · V2.1</small></div><div class="status" id="engineStatus">READY</div></header>
+
+<section class="screen home active" id="homeScreen">
+ <div class="hero"><div class="hero-mark">λ</div><h1>AETHER MINE</h1><p>LUA GAME STUDIO V2.1</p></div>
+ <button class="home-option" id="goEditor"><span class="ico">⌨</span><span><strong>LUA CODE EDITOR</strong><small>Write · Run · Save · Debug · Apply</small></span></button>
+ <button class="home-option" id="goStart"><span class="ico">🎮</span><span><strong>GAME START</strong><small>Launch your applied games and apps</small></span></button>
+</section>
+
+<section class="screen" id="editorScreen">
+ <div class="head"><strong>LUA CODE EDITOR</strong><div class="right"><button id="backHome">⌂ Home</button><button id="openSettings">⚙ Settings</button></div></div>
+ <div class="tabs"><button class="active" data-page="editorPane">Editor</button><button data-page="savedPane">Save Done</button><button data-page="previewPane">Preview / Run</button><button data-page="consolePane">Console</button></div>
+ <div class="screen active" id="editorPane">
+  <div class="toolbar"><button class="primary" id="runBtn">▶ Run</button><button id="saveBtn">▣ Save</button><button id="exampleBtn">✦ Example</button><button id="clearBtn">Clear</button><button id="applyBtn">Apply</button><button id="copyBtn">Copy</button><button id="zoomOut">A−</button><button id="zoomIn">A+</button></div>
+  <div class="name-row"><input id="projectName" maxlength="60" placeholder="Project name লিখুন"><button id="editorSettings">⚙</button></div>
+  <div class="editor-shell"><div class="gutter" id="lineNumbers">1</div><textarea class="code" id="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off"></textarea></div>
+ </div>
+ <div class="screen" id="savedPane"><div class="head"><strong>SAVE DONE · SAVED PROJECTS</strong><button id="refreshSaved">↻ Refresh</button></div><div class="panel" id="savedList"></div></div>
+ <div class="screen" id="previewPane"><div class="head"><strong>PREVIEW / RUN</strong><div class="right"><button id="reloadBtn">↻ Reload</button><button id="stopBtn">■ Stop</button></div></div><div class="preview"><canvas id="gameCanvas" width="800" height="450"></canvas></div></div>
+ <div class="screen" id="consolePane"><div class="head"><strong>CONSOLE / ERROR</strong><button id="clearConsole">Clear</button></div><div class="log" id="consoleLog">AETHER MINE LUA GAME STUDIO V2.1 ready.</div></div>
+</section>
+
+<section class="screen" id="startScreen"><div class="head"><strong>GAME START · APPLIED PROJECTS</strong><button id="startHome">⌂ Home</button></div><div class="panel" id="appliedList"></div></section>
+</div>
+
+<div class="modal-back" id="settingsModal"><div class="modal">
+ <div class="modal-head"><strong>CONTROL SYSTEM SETTINGS</strong><button id="closeSettings">×</button></div>
+ <div class="choice-grid">
+  <button class="choice" data-control="jj"><b>j.j</b><small>Joystick + Jump</small></button>
+  <button class="choice" data-control="abrl"><b>ABRL</b><small>Forward · Back · Left · Right · Up · Down</small></button>
+  <button class="choice" data-control="ja"><b>j.A</b><small>Joystick + Jump + Directional</small></button>
+  <button class="choice" data-control="mm"><b>m.m</b><small>Mouse · Path · Hand · Select</small></button>
+  <button class="choice" data-control="cc"><b>C.C</b><small>Command shortcuts</small></button>
+  <button class="choice" data-control="kb"><b>K.B</b><small>Keyboard input</small></button>
+ </div>
+ <div class="setting-row"><span>Editor text size</span><span><button id="modalZoomOut">A−</button> <button id="modalZoomIn">A+</button></span></div>
+ <div class="setting-row"><span>Control profile</span><b id="controlProfile">Game native</b></div>
+ <p style="font-size:10px;color:#718096">এই ধাপে Control Profile নির্বাচন সংরক্ষিত হবে। Touch/Joystick-এর বাস্তব Input চালু করতে পরবর্তী Native Engine আপডেট প্রয়োজন।</p>
+</div></div>
+<div class="toast" id="toast"></div>
+
 <script>
 (()=>{'use strict';
 const $=id=>document.getElementById(id);
-const starter=`-- AETHER MINE LUA GAME STUDIO V2.0
--- 2D Platformer example
--- API: game.create, background, rect, circle, line, text, key
+const STORE='aether_mine_lua_v21_projects',APPLIED='aether_mine_lua_v21_applied',SETTINGS='aether_mine_lua_v21_settings';
+const starter=`-- AETHER MINE LUA GAME STUDIO V2.1
+-- Simple 2D test scene
 
 game.create(800, 450)
-local player = {x=90,y=330,w=42,h=54,vx=0,vy=0,onGround=false}
-local platforms = {{x=0,y=410,w=800,h=40},{x=210,y=330,w=150,h=18},{x=440,y=270,w=145,h=18},{x=630,y=340,w=120,h=18}}
-local gravity,speed,jumpPower=0.55,4.2,-11
+local x, y = 100, 330
+local speed = 4
+
 function update()
- player.vx=0
- if game.key("left") then player.vx=-speed end
- if game.key("right") then player.vx=speed end
- if game.key("jump") and player.onGround then player.vy=jumpPower;player.onGround=false end
- player.x=player.x+player.vx;player.vy=player.vy+gravity;player.y=player.y+player.vy;player.onGround=false
- for _,p in ipairs(platforms) do
-  if player.x+player.w>p.x and player.x<p.x+p.w and player.y+player.h>=p.y and player.y+player.h<=p.y+p.h+12 and player.vy>=0 then
-   player.y=p.y-player.h;player.vy=0;player.onGround=true
-  end
- end
- if player.x<0 then player.x=0 end
- if player.x+player.w>800 then player.x=800-player.w end
- if player.y>500 then player.x,player.y,player.vy=90,330,0 end
+  if game.key("left") then x = x - speed end
+  if game.key("right") then x = x + speed end
 end
+
 function draw()
- game.background("#79c9f2")
- game.circle(690,75,38,"#ffe27a")
- game.rect(0,370,800,80,"#5dbb68")
- for _,p in ipairs(platforms) do game.rect(p.x,p.y,p.w,p.h,"#79543b");game.rect(p.x,p.y,p.w,5,"#a4df73") end
- game.rect(player.x,player.y,player.w,player.h,"#e83d54")
- game.rect(player.x+8,player.y+10,8,8,"#ffffff");game.rect(player.x+27,player.y+10,8,8,"#ffffff")
- game.text("AETHER MINE 2D",20,35,23,"#ffffff")
+  game.background("#78c9f2")
+  game.circle(690, 70, 35, "#ffe36b")
+  game.rect(0, 390, 800, 60, "#58a968")
+  game.rect(x, y, 45, 55, "#e74458")
+  game.text("AETHER MINE V2.1", 20, 35, 24, "#ffffff")
+  game.text("Use keyboard arrows to move", 20, 65, 15, "#ffffff")
 end
-print("2D example loaded")`;
+print("Lua 5.4 project ready")`;
+let projects={},applied=[],settings={zoom:13,control:'native'},active=false,raf=0,keys=new Set();
 const code=$('code'),canvas=$('gameCanvas'),ctx=canvas.getContext('2d');
-let active=false,raf=0,keys=new Set(),projects={};
-const STORE='aetherMineLuaStudioProjectsV2';
-function toast(s){const t=$('toast');t.textContent=s;t.style.display='block';clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.style.display='none',1800)}
-function page(name){['editor','saved','game','console'].forEach(n=>$(`${n}Page`).classList.toggle('active',n===name));if(name==='saved')renderSaved();if(name==='game')fitCanvas()}
-function log(s){const c=$('console');if(c.textContent.startsWith('AETHER MINE'))c.textContent='';c.textContent+=(c.textContent?'\n':'')+String(s);c.scrollTop=c.scrollHeight}
+function readStore(){try{projects=JSON.parse(localStorage.getItem(STORE)||'{}');applied=JSON.parse(localStorage.getItem(APPLIED)||'[]');settings={...settings,...JSON.parse(localStorage.getItem(SETTINGS)||'{}')}}catch(e){projects={};applied=[]}}
+function persist(){localStorage.setItem(STORE,JSON.stringify(projects));localStorage.setItem(APPLIED,JSON.stringify(applied));localStorage.setItem(SETTINGS,JSON.stringify(settings))}
+function toast(s){let t=$('toast');t.textContent=s;t.style.display='block';clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.style.display='none',1900)}
+function showScreen(id){document.querySelectorAll('#app>.screen').forEach(x=>x.classList.remove('active'));$(id).classList.add('active')}
+function showEditorPane(id){document.querySelectorAll('#editorScreen>.screen').forEach(x=>x.classList.remove('active'));$(id).classList.add('active');document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));if(id==='savedPane')renderSaved();if(id==='previewPane'){}}
+function log(s){let el=$('consoleLog');if(el.textContent.startsWith('AETHER MINE'))el.textContent='';el.textContent+=(el.textContent?'\n':'')+String(s);el.scrollTop=el.scrollHeight}
+function lineSync(){let n=code.value.split('\n').length;$('lineNumbers').textContent=Array.from({length:n},(_,i)=>i+1).join('\n')}
+function syncGutter(){ $('lineNumbers').scrollTop=code.scrollTop; }
+function save(){let name=$('projectName').value.trim();if(!name){toast('আগে Project Name লিখুন');return}let key=name.toLocaleLowerCase();if(projects[key]){toast('এই নামে Project আগে থেকেই আছে। নতুন নাম দিন।');return}projects[key]={name,code:code.value,created:Date.now()};persist();renderSaved();toast('Save Done: '+name)}
+function renderSaved(){readStore();let list=$('savedList');list.innerHTML='';let entries=Object.entries(projects).sort((a,b)=>b[1].created-a[1].created);if(!entries.length){list.innerHTML='<div class="empty">এখনো কোনো Project Save করা হয়নি।</div>';return}for(const [key,p] of entries){let card=document.createElement('div');card.className='project-card';let title=document.createElement('div');title.className='project-title';title.textContent=p.name;let meta=document.createElement('div');meta.className='project-meta';meta.textContent='Lua Project · '+new Date(p.created).toLocaleString();let actions=document.createElement('div');actions.className='actions';let open=document.createElement('button');open.className='soft';open.textContent='Open Editor';open.onclick=()=>{code.value=p.code;$('projectName').value='';lineSync();showEditorPane('editorPane');toast('কোড Editor-এ খুলেছে। পরিবর্তন করে নতুন নামে Save করো।')};let run=document.createElement('button');run.className='primary';run.textContent='Run';run.onclick=()=>{code.value=p.code;$('projectName').value=p.name;runCode()};let del=document.createElement('button');del.className='danger';del.textContent='Delete';del.onclick=()=>{if(confirm('এই Project মুছে ফেলবে?')){delete projects[key];applied=applied.filter(x=>x!==key);persist();renderSaved()}};actions.append(run,open,del);card.append(title,meta,actions);list.append(card)}}
+function renderApplied(){readStore();let list=$('appliedList');list.innerHTML='';let valid=applied.filter(k=>projects[k]);if(!valid.length){list.innerHTML='<div class="empty">এখনো Apply করা Project নেই। Editor-এ Project খুলে Apply চাপো।</div>';return}valid.forEach(key=>{let p=projects[key],card=document.createElement('div');card.className='project-card';let title=document.createElement('div');title.className='project-title';title.textContent=p.name;let meta=document.createElement('div');meta.className='project-meta';meta.textContent='Applied Project · Tap to launch';let actions=document.createElement('div');actions.className='actions';let del=document.createElement('button');del.className='danger';del.textContent='Delete';del.onclick=()=>{applied=applied.filter(x=>x!==key);persist();renderApplied()};card.onclick=(e)=>{if(e.target!==del){code.value=p.code;$('projectName').value=p.name;showScreen('editorScreen');showEditorPane('previewPane');runCode()}};actions.append(del);card.append(title,meta,actions);list.append(card)})}
+function applyProject(){let name=$('projectName').value.trim(),key=name.toLocaleLowerCase();if(!name||!projects[key]){toast('আগে Project Save করো, তারপর Apply');return}if(!applied.includes(key))applied.push(key);persist();toast(name+' এখন GAME START-এ প্রস্তুত')}
 function decode(s){return s.replace(/\\t/g,'\t').replace(/\\n/g,'\n').replace(/\\r/g,'\r').replace(/\\\\/g,'\\')}
-function parseResult(raw){if(!raw)return;raw.split(/\r?\n/).forEach(row=>{if(row.startsWith('@PRINT\t')){log(decode(row.slice(7)));return}if(!row.startsWith('@GAME\t'))return;const a=row.slice(6).split('\t'),cmd=a[0],v=a.slice(1).map(decode),n=i=>Number(v[i]||0);
- if(cmd==='create'){canvas.width=Math.max(1,Math.min(4096,n(0)));canvas.height=Math.max(1,Math.min(4096,n(1)));fitCanvas()}
- else if(cmd==='background'){ctx.fillStyle=v[0];ctx.fillRect(0,0,canvas.width,canvas.height)}
- else if(cmd==='rect'){ctx.fillStyle=v[4];ctx.fillRect(n(0),n(1),n(2),n(3))}
- else if(cmd==='circle'){ctx.fillStyle=v[3];ctx.beginPath();ctx.arc(n(0),n(1),Math.max(0,n(2)),0,Math.PI*2);ctx.fill()}
- else if(cmd==='line'){ctx.strokeStyle=v[4];ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(n(0),n(1));ctx.lineTo(n(2),n(3));ctx.stroke()}
- else if(cmd==='text'){ctx.fillStyle=v[4];ctx.font=`${Math.max(8,Math.min(100,n(3)))}px system-ui`;ctx.fillText(v[0],n(1),n(2))}
- })}
-function fitCanvas(){/* Canvas CSS scales to the full available preview area; its drawing resolution stays game-defined. */}
-function keyString(){return [...keys].join(',')}
-function frame(){if(!active)return;try{parseResult(window.AetherLua.frame(keyString()))}catch(e){log('FRAME ERROR: '+e.message);stop();page('console');return}raf=requestAnimationFrame(frame)}
-function run(){if(!window.AetherLua||typeof AetherLua.runGame!=='function'){log('ERROR: Updated Android bridge required.');page('console');return}stop(false);$('console').textContent='';log('Starting Lua project…');page('game');try{const result=AetherLua.runGame(code.value);parseResult(result);if((result||'').includes('@PRINT\tERROR:')){log('Game start reported an error.');page('console');return}active=true;raf=requestAnimationFrame(frame);log('Run started.')}catch(e){log('RUN ERROR: '+e.message);page('console')}}
-function stop(callNative=true){active=false;if(raf)cancelAnimationFrame(raf);raf=0;keys.clear();if(callNative&&window.AetherLua&&typeof AetherLua.stopGame==='function')try{AetherLua.stopGame()}catch(_){} }
-function loadProjects(){try{projects=JSON.parse(localStorage.getItem(STORE)||'{}');if(!projects||typeof projects!=='object')projects={}}catch(_){projects={}}}
-function saveProject(){let name=$('projectName').value.trim();if(!name)name=prompt('প্রজেক্টের নাম লিখুন:','My Lua Project')||'';name=name.trim();if(!name){toast('নাম দেওয়া হয়নি');return}const key=name.toLowerCase();projects[key]={name,code:code.value,updated:new Date().toLocaleString()};try{localStorage.setItem(STORE,JSON.stringify(projects));$('projectName').value=name;renderSaved();toast('Save Done: '+name)}catch(e){toast('Save failed: storage full')}}
-function renderSaved(){loadProjects();const list=$('saveList');list.innerHTML='';const entries=Object.entries(projects);if(!entries.length){list.innerHTML='<div class="empty">এখনো কোনো প্রজেক্ট Save করা হয়নি।<br>Editor-এ গিয়ে নাম লিখে Save চাপুন।</div>';return}entries.sort((a,b)=>(b[1].updated||'').localeCompare(a[1].updated||''));entries.forEach(([key,p])=>{const row=document.createElement('div');row.className='saved-item';const open=document.createElement('button');open.className='saved-open';open.textContent=p.name;const meta=document.createElement('span');meta.className='saved-meta';meta.textContent='Saved • '+(p.updated||'');open.appendChild(meta);open.onclick=()=>{code.value=p.code||'';$('projectName').value=p.name;page('editor');toast('প্রজেক্ট খুলেছে: '+p.name)};const del=document.createElement('button');del.className='danger';del.textContent='Delete';del.onclick=()=>{if(confirm('এই প্রজেক্টটি মুছে ফেলবে?')){delete projects[key];localStorage.setItem(STORE,JSON.stringify(projects));renderSaved()}};row.append(open,del);list.appendChild(row)})}
-$('runBtn').onclick=run;$('saveBtn').onclick=saveProject;$('stopBtn').onclick=()=>{stop();log('Project stopped.');page('console')};$('sampleBtn').onclick=()=>{code.value=starter;$('projectName').value='2D Platformer Example';toast('Example loaded')};$('clearBtn').onclick=()=>{code.value='';toast('Editor cleared')};
-$('editorTab').onclick=()=>page('editor');$('savedTab').onclick=()=>page('saved');$('gameTab').onclick=()=>page('game');$('consoleTab').onclick=()=>page('console');$('savedRefresh').onclick=renderSaved;$('previewConsoleBtn').onclick=()=>page('console');$('consoleEditorBtn').onclick=()=>page('editor');$('consolePreviewBtn').onclick=()=>page('game');$('clearLogBtn').onclick=()=>$('console').textContent='Console cleared.';
-// Only physical keyboard events are forwarded. No extra on-screen game controls are injected.
-function mapKey(e){const k=e.key.toLowerCase();if(k==='arrowleft'||k==='a')return'left';if(k==='arrowright'||k==='d')return'right';if(k===' '||k==='arrowup'||k==='w')return'jump';return null}
-window.addEventListener('keydown',e=>{const k=mapKey(e);if(k){e.preventDefault();keys.add(k)}});window.addEventListener('keyup',e=>{const k=mapKey(e);if(k)keys.delete(k)});window.addEventListener('blur',()=>keys.clear());window.addEventListener('resize',fitCanvas);window.addEventListener('orientationchange',()=>setTimeout(fitCanvas,150));
-loadProjects();try{code.value=localStorage.getItem('aetherLuaGameCode')||starter}catch(_){code.value=starter}try{if(window.AetherLua&&AetherLua.nativeEngineStatus)$('status').textContent=AetherLua.nativeEngineStatus();else $('status').textContent='BRIDGE CHECK'}catch(e){$('status').textContent='ENGINE CHECK ERROR'}
+function parse(raw){if(!raw)return;raw.split(/\r?\n/).forEach(row=>{if(row.startsWith('@PRINT\t')){log(decode(row.slice(7)));return}if(!row.startsWith('@GAME\t'))return;let a=row.slice(6).split('\t'),cmd=a[0],v=a.slice(1).map(decode),n=i=>Number(v[i]||0);if(cmd==='create'){canvas.width=Math.max(1,Math.min(4096,n(0)));canvas.height=Math.max(1,Math.min(4096,n(1)))}else if(cmd==='background'){ctx.fillStyle=v[0];ctx.fillRect(0,0,canvas.width,canvas.height)}else if(cmd==='rect'){ctx.fillStyle=v[4];ctx.fillRect(n(0),n(1),n(2),n(3))}else if(cmd==='circle'){ctx.fillStyle=v[3];ctx.beginPath();ctx.arc(n(0),n(1),Math.max(0,n(2)),0,Math.PI*2);ctx.fill()}else if(cmd==='line'){ctx.strokeStyle=v[4];ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(n(0),n(1));ctx.lineTo(n(2),n(3));ctx.stroke()}else if(cmd==='text'){ctx.fillStyle=v[4];ctx.font=`${Math.max(8,Math.min(100,n(3)))}px system-ui`;ctx.fillText(v[0],n(1),n(2))}})}
+function runCode(){if(!window.AetherLua||typeof AetherLua.runGame!=='function'){log('ERROR: Android Lua Bridge V2.1 compatible build required.');showEditorPane('consolePane');return}stop(false);$('consoleLog').textContent='';log('Starting Lua project…');showEditorPane('previewPane');try{let result=AetherLua.runGame(code.value);parse(result);if((result||'').includes('@PRINT\tERROR:')){log('Lua runtime reported an error.');showEditorPane('consolePane');return}active=true;raf=requestAnimationFrame(frame);log('Run started.')}catch(e){log('RUN ERROR: '+e.message);showEditorPane('consolePane')}}
+function frame(){if(!active)return;try{parse(AetherLua.frame([...keys].join(',')))}catch(e){log('FRAME ERROR: '+e.message);stop();showEditorPane('consolePane');return}raf=requestAnimationFrame(frame)}
+function stop(callNative=true){active=false;if(raf)cancelAnimationFrame(raf);raf=0;keys.clear();if(callNative&&window.AetherLua&&AetherLua.stopGame)try{AetherLua.stopGame()}catch(e){}}
+function setZoom(v){settings.zoom=Math.max(10,Math.min(24,v));code.style.fontSize=settings.zoom+'px';persist()}
+$('goEditor').onclick=()=>{showScreen('editorScreen');showEditorPane('editorPane')};$('goStart').onclick=()=>{renderApplied();showScreen('startScreen')};$('backHome').onclick=()=>showScreen('homeScreen');$('startHome').onclick=()=>showScreen('homeScreen');
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>showEditorPane(b.dataset.page));
+$('saveBtn').onclick=save;$('applyBtn').onclick=applyProject;$('runBtn').onclick=runCode;$('reloadBtn').onclick=runCode;$('stopBtn').onclick=()=>{stop();log('Project stopped.')};
+$('exampleBtn').onclick=()=>{code.value=starter;$('projectName').value='';lineSync();toast('Example loaded')};$('clearBtn').onclick=()=>{if(confirm('Editor-এর কোড মুছবে?')){code.value='';lineSync()}};$('copyBtn').onclick=()=>{if(navigator.clipboard?.writeText)navigator.clipboard.writeText(code.value).then(()=>toast('Code copied')).catch(()=>toast('Copy unavailable'));else{code.select();document.execCommand('copy');toast('Code copied')}};
+$('zoomIn').onclick=()=>setZoom(settings.zoom+1);$('zoomOut').onclick=()=>setZoom(settings.zoom-1);$('modalZoomIn').onclick=()=>setZoom(settings.zoom+1);$('modalZoomOut').onclick=()=>setZoom(settings.zoom-1);
+$('refreshSaved').onclick=renderSaved;$('clearConsole').onclick=()=>$('consoleLog').textContent='Console cleared.';$('openSettings').onclick=$('editorSettings').onclick=()=>{$('settingsModal').classList.add('show')};$('closeSettings').onclick=()=>{$('settingsModal').classList.remove('show')};$('settingsModal').onclick=e=>{if(e.target===$('settingsModal'))$('settingsModal').classList.remove('show')};
+document.querySelectorAll('[data-control]').forEach(b=>b.onclick=()=>{settings.control=b.dataset.control;persist();$('controlProfile').textContent=b.querySelector('b').textContent;toast('Control profile selected')});
+code.addEventListener('input',lineSync);code.addEventListener('scroll',syncGutter);code.addEventListener('keydown',e=>{if(e.key==='Tab'){e.preventDefault();let a=code.selectionStart,b=code.selectionEnd;code.setRangeText('    ',a,b,'end');lineSync()}});
+function mapKey(e){let k=e.key.toLowerCase();if(k==='arrowleft'||k==='a')return'left';if(k==='arrowright'||k==='d')return'right';if(k===' '||k==='arrowup'||k==='w')return'jump';if(k==='arrowdown'||k==='s')return'down';return null}
+window.addEventListener('keydown',e=>{let k=mapKey(e);if(k){e.preventDefault();keys.add(k)}});window.addEventListener('keyup',e=>{let k=mapKey(e);if(k)keys.delete(k)});window.addEventListener('blur',()=>keys.clear());
+readStore();code.value=starter;lineSync();setZoom(settings.zoom);$('controlProfile').textContent=settings.control;try{$('engineStatus').textContent=window.AetherLua?.nativeEngineStatus?.()||'LUA BRIDGE CHECK'}catch(e){$('engineStatus').textContent='BRIDGE CHECK'}
 })();
 </script>
-</body></html>
+</body>
+</html>
