@@ -18,7 +18,7 @@ static const char* GAME_PREFIX = "@GAME\t";
 static const char* PRINT_PREFIX = "@PRINT\t";
 static const char* UI_PREFIX = "@UI\t";
 
-static float inputAxisX = 0.0f, inputAxisY = 0.0f;
+static float gAxisX = 0.0f, gAxisY = 0.0f;
 static float pointerX = 0.0f, pointerY = 0.0f;
 static bool pointerIsDown = false;
 
@@ -127,8 +127,8 @@ static int inputAction(lua_State* L) {
     lua_pushboolean(L, tableFlag(L, "__aether_actions", id));
     return 1;
 }
-static int inputAxisX(lua_State* L) { lua_pushnumber(L,inputAxisX); return 1; }
-static int inputAxisY(lua_State* L) { lua_pushnumber(L,inputAxisY); return 1; }
+static int inputAxisX(lua_State* L) { lua_pushnumber(L,gAxisX); return 1; }
+static int inputAxisY(lua_State* L) { lua_pushnumber(L,gAxisY); return 1; }
 static int inputPointerX(lua_State* L) { lua_pushnumber(L,pointerX); return 1; }
 static int inputPointerY(lua_State* L) { lua_pushnumber(L,pointerY); return 1; }
 static int inputPointerDown(lua_State* L) { lua_pushboolean(L,pointerIsDown); return 1; }
@@ -236,7 +236,7 @@ static jstring toJava(JNIEnv* env,const std::string& s) {
 }
 static void applyInput(const std::string& keys, const std::string& actions,
                        float ax, float ay, float px, float py, bool down) {
-    inputAxisX=ax; inputAxisY=ay; pointerX=px; pointerY=py; pointerIsDown=down;
+    gAxisX=ax; gAxisY=ay; pointerX=px; pointerY=py; pointerIsDown=down;
     if (gameState) {
         setCsvTable(gameState,"__aether_keys",keys);
         setCsvTable(gameState,"__aether_actions",actions);
@@ -292,7 +292,7 @@ Java_com_aethermine_lua_MainActivity_runLuaGame(JNIEnv* env,jclass,jstring sourc
     std::lock_guard<std::mutex> lock(luaMutex);
     if (gameState) { lua_close(gameState); gameState=nullptr; }
     gameOutput.str(""); gameOutput.clear(); gameCommands.str(""); gameCommands.clear();
-    inputAxisX=inputAxisY=pointerX=pointerY=0; pointerIsDown=false;
+    gAxisX=gAxisY=pointerX=pointerY=0; pointerIsDown=false;
     gameState=luaL_newstate();
     if (!gameState) return env->NewStringUTF("@PRINT\tERROR: Cannot create Lua game state.\n");
     restrictLibraries(gameState);
