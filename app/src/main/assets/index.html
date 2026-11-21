@@ -1,392 +1,99 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#080d1b">
-<title>AETHER MINE • Lua Studio</title>
+<title>AETHER MINE • Lua Game Studio V2.0</title>
 <style>
-:root{
-  color-scheme:dark;
-  --bg:#080d1b;--panel:#101a2d;--panel2:#14213a;--line:#243654;
-  --text:#edf4ff;--muted:#91a4c3;--cyan:#55e6ff;--blue:#638cff;
-  --green:#53e0a0;--red:#ff687e;--gold:#ffd36b;
-  --radius:18px;--safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px);
-}
-*{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
-button,textarea{font:inherit}
-button{border:0;cursor:pointer;color:var(--text);-webkit-tap-highlight-color:transparent}
-#app{height:100dvh;min-height:100%;display:flex;flex-direction:column;overflow:hidden;background:radial-gradient(ellipse at 85% -10%,#1a3d65 0%,transparent 38%),var(--bg)}
-.topbar{padding:calc(10px + var(--safe-top)) 14px 10px;display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid #243654;background:#091225eF;flex-shrink:0}
-.brand{display:flex;align-items:center;gap:10px;min-width:0}
-.logo{width:40px;height:40px;border-radius:13px;display:grid;place-items:center;background:linear-gradient(145deg,#65f0ff,#547aff 65%,#8b69ff);color:#07101e;font-size:21px;font-weight:1000;box-shadow:0 0 25px #55e6ff35}
-.brand-title{font-size:14px;font-weight:900;letter-spacing:1.2px;white-space:nowrap}
-.brand-sub{font-size:10px;color:var(--muted);letter-spacing:1.5px;margin-top:2px}
-.status-pill{font-size:10px;border:1px solid var(--line);border-radius:30px;padding:7px 9px;color:var(--muted);white-space:nowrap}
-.status-pill.ok{color:var(--green);border-color:#286c59;background:#12352d}
-.status-pill.bad{color:var(--gold);border-color:#705a2a;background:#302713}
-main{flex:1;min-height:0;display:flex;flex-direction:column}
-.page{display:none;flex:1;min-height:0;flex-direction:column}
-.page.active{display:flex}
-.page-head{padding:15px 15px 10px;display:flex;align-items:center;justify-content:space-between;gap:10px}
-.page-title{font-size:19px;font-weight:850;letter-spacing:.2px}
-.page-hint{font-size:11px;color:var(--muted);margin-top:4px}
-.chip{font-size:10px;color:var(--cyan);border:1px solid #28546d;background:#10283b;border-radius:30px;padding:6px 9px}
-.toolbar{padding:0 14px 10px;display:flex;gap:8px;flex-wrap:wrap;flex-shrink:0}
-.btn{min-height:40px;padding:0 13px;border-radius:12px;background:#1a2943;border:1px solid #2a4164;font-size:12px;font-weight:750;display:inline-flex;align-items:center;justify-content:center;gap:7px}
-.btn:active{transform:scale(.97)}
-.btn.primary{background:linear-gradient(120deg,#36d9ed,#638cff);border:0;color:#071321;box-shadow:0 5px 20px #45d9ff25}
-.btn.stop{background:#3a1d2b;border-color:#793348;color:#ff9aaa}
-.btn.ghost{background:transparent}
-.btn.small{min-height:34px;padding:0 10px;font-size:11px}
-.editor-card{margin:0 12px;flex:1;min-height:0;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:#090f1d;display:flex;flex-direction:column;box-shadow:0 12px 35px #0005}
-.editor-head{height:43px;flex-shrink:0;padding:0 12px;display:flex;align-items:center;justify-content:space-between;background:#111d32;border-bottom:1px solid var(--line)}
-.file-label{font-size:11px;color:#c4d4ee;font-weight:700;display:flex;align-items:center;gap:8px}
-.file-dot{width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px var(--cyan)}
-.editor-tools{display:flex;gap:6px}
-.icon-btn{width:30px;height:29px;border-radius:8px;background:#1b2b46;border:1px solid #304565;color:#c9dcf8;font-weight:800}
-#code{display:block;resize:none;flex:1;min-height:0;width:100%;border:0;outline:0;background:#090f1d;color:#dceaff;padding:15px 15px 24px;font-family:"JetBrains Mono","SFMono-Regular",Consolas,monospace;font-size:14px;line-height:1.65;tab-size:4;white-space:pre;overflow:auto;caret-color:var(--cyan);-webkit-overflow-scrolling:touch}
-#code::selection{background:#315d8c}
-.editor-foot{flex-shrink:0;padding:8px 12px;display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:10px;border-top:1px solid #1d2c45}
-.bottom-note{padding:9px 15px calc(10px + var(--safe-bottom));font-size:10px;color:#7186a8;text-align:center}
-.run-top{padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-shrink:0}
-.run-title{font-size:18px;font-weight:850}
-.run-sub{font-size:10px;color:var(--muted);margin-top:3px}
-.run-actions{display:flex;gap:7px}
-.console-shell{margin:0 12px 12px;flex:1;min-height:0;border:1px solid var(--line);border-radius:var(--radius);background:#070d18;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 14px 40px #0006}
-.console-head{height:45px;flex-shrink:0;padding:0 13px;display:flex;align-items:center;justify-content:space-between;background:#111d32;border-bottom:1px solid var(--line)}
-.console-heading{font-size:12px;font-weight:800;display:flex;align-items:center;gap:8px}
-.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green)}
-#output{flex:1;min-height:0;overflow:auto;padding:14px;color:#cde5d9;font:13px/1.7 "JetBrains Mono",Consolas,monospace;white-space:pre-wrap;overflow-wrap:anywhere;-webkit-overflow-scrolling:touch}
-.output-line{margin:0 0 3px}
-.output-line.error{color:#ff8292}
-.output-line.info{color:#91a9ce}
-.output-line.success{color:#65e6a9}
-.empty-state{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#7589a8;gap:9px}
-.empty-icon{font-size:34px;opacity:.75}
-.empty-state strong{font-size:13px;color:#b6c8e2}
-.empty-state span{font-size:11px}
-.run-foot{padding:9px 13px calc(10px + var(--safe-bottom));border-top:1px solid #1d2c45;display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:10px}
-.hidden{display:none!important}
-.toast{position:fixed;left:50%;bottom:calc(20px + var(--safe-bottom));transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#203652;border:1px solid #41638e;color:#eaf5ff;border-radius:12px;padding:10px 14px;font-size:12px;z-index:10;transition:.2s;max-width:90%;text-align:center}
-.toast.show{opacity:1;transform:translate(-50%,0)}
-@media (orientation:landscape){
- .topbar{padding-top:calc(5px + var(--safe-top));padding-bottom:5px}
- .logo{width:32px;height:32px}
- .page-head{padding:8px 14px 6px}
- .page-title{font-size:16px}
- .toolbar{padding-bottom:7px}
- .btn{min-height:34px}
- .editor-head{height:36px}
- #code{font-size:13px;padding:9px 13px;line-height:1.5}
- .bottom-note{padding-top:5px;padding-bottom:calc(5px + var(--safe-bottom))}
- .run-top{padding:7px 12px}
- .console-head{height:36px}
- .console-shell{margin-bottom:7px}
-}
-@media (max-width:380px){
- .brand-title{font-size:12px}
- .status-pill{font-size:9px;padding:6px 7px}
- .btn{padding:0 10px;font-size:11px}
- .toolbar{gap:6px}
-}
+:root{color-scheme:dark;--bg:#080d1b;--panel:#101a2d;--line:#243654;--text:#edf4ff;--muted:#91a4c3;--cyan:#55e6ff;--green:#53e0a0;--red:#ff687e}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:system-ui,sans-serif}body{height:100vh;height:100dvh}button,input,textarea{font:inherit}button{border:1px solid #304565;border-radius:10px;background:#1a2943;color:var(--text);padding:9px 12px;font-weight:700;min-height:38px}button:active{filter:brightness(1.25)}button.primary{background:linear-gradient(120deg,#36d9ed,#638cff);color:#071321;border:0}button.stop{background:#3a1d2b;color:#ff9aaa}button.danger{color:#ff9aaa;border-color:#713447}.top{flex:none;min-height:48px;padding:7px 12px;background:#091225;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:8px}.brand{font-weight:900;letter-spacing:1px}.sub{font-size:10px;color:var(--muted)}#status{font-size:10px;color:var(--green);text-align:right}#app{height:100%;height:100dvh;display:flex;flex-direction:column;min-height:0}nav{display:flex;gap:6px;padding:7px;flex:none;background:#0b1425;border-bottom:1px solid var(--line)}nav button{flex:1;min-width:0;padding:8px 4px;font-size:12px}.page{display:none;flex:1;min-height:0;min-width:0;flex-direction:column}.page.active{display:flex}.toolbar{display:flex;gap:7px;flex-wrap:wrap;padding:9px 10px 7px;flex:none}.project-name{margin:0 10px 7px;padding:8px 10px;border:1px solid var(--line);border-radius:9px;background:#0c1526;color:var(--text);width:calc(100% - 20px);outline:none}#code{margin:0 10px 10px;flex:1;min-height:0;width:calc(100% - 20px);resize:none;border:1px solid var(--line);border-radius:12px;background:#090f1d;color:#dceaff;padding:12px;font:13px/1.55 monospace;white-space:pre;tab-size:4;outline:none;overflow:auto}#saveList{padding:10px;overflow:auto;min-height:0}.saved-item{display:flex;align-items:center;gap:8px;padding:10px;margin-bottom:8px;border:1px solid var(--line);border-radius:11px;background:#101a2d}.saved-open{flex:1;text-align:left;min-width:0;overflow-wrap:anywhere}.saved-meta{font-size:10px;color:var(--muted);display:block;font-weight:400;margin-top:3px}.empty{padding:24px 12px;text-align:center;color:var(--muted);font-size:13px}.page-head{padding:8px 10px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex:none}.page-head strong{font-size:13px;letter-spacing:.5px}.page-head .actions{display:flex;gap:6px}.page-head button{padding:7px 10px}.preview-wrap{flex:1;min-height:0;min-width:0;display:flex;align-items:center;justify-content:center;padding:8px;background:#050a13;overflow:hidden}#gameCanvas{display:block;width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain;background:#101a2d;border:1px solid var(--line);border-radius:8px}#console{flex:1;min-height:0;overflow:auto;background:#070d18;border:1px solid var(--line);border-radius:10px;margin:0 10px 10px;padding:10px;color:#bfe7d4;font:12px/1.6 monospace;white-space:pre-wrap;overflow-wrap:anywhere}.console-tools{display:flex;gap:7px;padding:8px 10px;flex:none}#toast{position:fixed;z-index:20;bottom:14px;left:50%;transform:translateX(-50%);max-width:90vw;background:#203652;padding:9px 13px;border-radius:10px;font-size:12px;display:none;box-shadow:0 5px 20px #0008}.muted{color:var(--muted)}
+@media(orientation:landscape){.top{min-height:38px;padding:4px 10px}.sub{font-size:9px}nav{padding:4px 7px}nav button{min-height:32px;padding:5px 3px}.toolbar{padding:6px 9px}.toolbar button{min-height:32px;padding:6px 9px}#code{font-size:12px}.page-head{padding:4px 8px}.preview-wrap{padding:4px}}
 </style>
 </head>
 <body>
 <div id="app">
-  <header class="topbar">
-    <div class="brand">
-      <div class="logo">λ</div>
-      <div>
-        <div class="brand-title">AETHER MINE</div>
-        <div class="brand-sub">LUA INTERPRETER • 5.4.9</div>
-      </div>
-    </div>
-    <div id="engineStatus" class="status-pill">ENGINE CHECKING…</div>
-  </header>
-
-  <main>
-    <section id="editorPage" class="page active">
-      <div class="page-head">
-        <div>
-          <div class="page-title">Lua Code Editor</div>
-          <div class="page-hint">Write • Save • Run your Lua script</div>
-        </div>
-        <span class="chip">LUA 5.4.9</span>
-      </div>
-
-      <div class="toolbar">
-        <button class="btn primary" id="runBtn">▶ Run Code</button>
-        <button class="btn" id="saveBtn">▣ Save</button>
-        <button class="btn" id="sampleBtn">✦ Example</button>
-        <button class="btn ghost" id="clearCodeBtn">Clear</button>
-      </div>
-
-      <div class="editor-card">
-        <div class="editor-head">
-          <div class="file-label"><span class="file-dot"></span><span id="fileName">main.lua</span></div>
-          <div class="editor-tools">
-            <button class="icon-btn" id="fontDown" aria-label="Decrease font">A−</button>
-            <button class="icon-btn" id="fontUp" aria-label="Increase font">A+</button>
-          </div>
-        </div>
-        <textarea id="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" aria-label="Lua code editor"></textarea>
-        <div class="editor-foot">
-          <span id="lineInfo">1 line</span>
-          <span>UTF-8 · Lua 5.4.9</span>
-          <span id="saveState">Not saved</span>
-        </div>
-      </div>
-      <div class="bottom-note">AETHER MINE LUA STUDIO · Portrait & Landscape Ready</div>
-    </section>
-
-    <section id="runPage" class="page">
-      <div class="run-top">
-        <div>
-          <div class="run-title">Run / Output</div>
-          <div class="run-sub">Separate full-screen execution console</div>
-        </div>
-        <div class="run-actions">
-          <button class="btn small stop" id="stopBtn">■ Stop</button>
-          <button class="btn small" id="backBtn">← Editor</button>
-        </div>
-      </div>
-      <div class="console-shell">
-        <div class="console-head">
-          <div class="console-heading"><span class="live-dot"></span> OUTPUT CONSOLE</div>
-          <button class="btn small ghost" id="clearOutputBtn">⌫ Clear Output</button>
-        </div>
-        <div id="output" role="log" aria-live="polite">
-          <div class="empty-state" id="emptyOutput">
-            <div class="empty-icon">⌁</div>
-            <strong>Console is ready</strong>
-            <span>Tap Run Code in the editor to execute your Lua script.</span>
-          </div>
-        </div>
-        <div class="run-foot">
-          <span id="runState">READY</span>
-          <span id="runTime">No execution yet</span>
-        </div>
-      </div>
-    </section>
-  </main>
-</div>
-<div id="toast" class="toast"></div>
-
+ <header class="top"><div><div class="brand">λ AETHER MINE</div><div class="sub">LUA GAME STUDIO • V2.0</div></div><div id="status">ENGINE CHECK…</div></header>
+ <nav>
+  <button id="editorTab">Editor</button><button id="savedTab">Save Done</button><button id="gameTab">Preview / Run</button><button id="consoleTab">Console</button>
+ </nav>
+ <section id="editorPage" class="page active">
+  <div class="toolbar"><button class="primary" id="runBtn">▶ Run</button><button id="saveBtn">▣ Save</button><button id="sampleBtn">✦ Example</button><button id="clearBtn">Clear</button></div>
+  <input id="projectName" class="project-name" maxlength="60" placeholder="Project / App name লিখুন" autocomplete="off">
+  <textarea id="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off"></textarea>
+ </section>
+ <section id="savedPage" class="page"><div class="page-head"><strong>SAVED PROJECTS</strong><button id="savedRefresh">↻ Refresh</button></div><div id="saveList"></div></section>
+ <section id="gamePage" class="page">
+  <div class="page-head"><strong>PREVIEW / RUN</strong><div class="actions"><button id="stopBtn" class="stop">■ Stop</button><button id="previewConsoleBtn">Console</button></div></div>
+  <div class="preview-wrap"><canvas id="gameCanvas" width="800" height="450"></canvas></div>
+ </section>
+ <section id="consolePage" class="page"><div class="page-head"><strong>CONSOLE / ERROR LOG</strong><button id="clearLogBtn">Clear Log</button></div><div id="console">AETHER MINE Lua Game Studio V2.0 ready.</div><div class="console-tools"><button id="consoleEditorBtn">← Editor</button><button id="consolePreviewBtn">Preview</button></div></section>
+</div><div id="toast"></div>
 <script>
-(() => {
-  "use strict";
-  const $ = id => document.getElementById(id);
-  const starter = `-- AETHER MINE LUA INTERPRETER
--- Lua 5.4.9
+(()=>{'use strict';
+const $=id=>document.getElementById(id);
+const starter=`-- AETHER MINE LUA GAME STUDIO V2.0
+-- 2D Platformer example
+-- API: game.create, background, rect, circle, line, text, key
 
-print("Hello AETHER MINE!")
-
-local a = 25
-local b = 15
-
-print("Total:", a + b)
-
-for i = 1, 5 do
-    print("Lua:", i)
+game.create(800, 450)
+local player = {x=90,y=330,w=42,h=54,vx=0,vy=0,onGround=false}
+local platforms = {{x=0,y=410,w=800,h=40},{x=210,y=330,w=150,h=18},{x=440,y=270,w=145,h=18},{x=630,y=340,w=120,h=18}}
+local gravity,speed,jumpPower=0.55,4.2,-11
+function update()
+ player.vx=0
+ if game.key("left") then player.vx=-speed end
+ if game.key("right") then player.vx=speed end
+ if game.key("jump") and player.onGround then player.vy=jumpPower;player.onGround=false end
+ player.x=player.x+player.vx;player.vy=player.vy+gravity;player.y=player.y+player.vy;player.onGround=false
+ for _,p in ipairs(platforms) do
+  if player.x+player.w>p.x and player.x<p.x+p.w and player.y+player.h>=p.y and player.y+player.h<=p.y+p.h+12 and player.vy>=0 then
+   player.y=p.y-player.h;player.vy=0;player.onGround=true
+  end
+ end
+ if player.x<0 then player.x=0 end
+ if player.x+player.w>800 then player.x=800-player.w end
+ if player.y>500 then player.x,player.y,player.vy=90,330,0 end
 end
-
-print("Script completed!")`;
-  const code = $("code");
-  let fontSize = 14;
-  let running = false;
-  let stopRequested = false;
-  let toastTimer;
-
-  function toast(message) {
-    const el = $("toast");
-    el.textContent = message;
-    el.classList.add("show");
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => el.classList.remove("show"), 2300);
-  }
-  function showPage(page) {
-    $("editorPage").classList.toggle("active", page === "editor");
-    $("runPage").classList.toggle("active", page === "run");
-  }
-  function addOutput(text, type="normal") {
-    const output = $("output");
-    const empty = $("emptyOutput");
-    if (empty) empty.remove();
-    const line = document.createElement("div");
-    line.className = "output-line" + (type === "error" ? " error" : type === "info" ? " info" : type === "success" ? " success" : "");
-    line.textContent = text;
-    output.appendChild(line);
-    output.scrollTop = output.scrollHeight;
-  }
-  function clearOutput() {
-    $("output").innerHTML = `<div class="empty-state" id="emptyOutput"><div class="empty-icon">⌁</div><strong>Console cleared</strong><span>New output will appear here.</span></div>`;
-    $("runState").textContent = "READY";
-    $("runTime").textContent = "Waiting for execution";
-  }
-  function updateLineInfo() {
-    const count = code.value.split("\n").length;
-    $("lineInfo").textContent = count + (count === 1 ? " line" : " lines") + " · " + code.value.length + " chars";
-  }
-  function checkEngine() {
-    const pill = $("engineStatus");
-    try {
-      if (window.AetherLua && typeof window.AetherLua.run === "function") {
-        pill.textContent = "ENGINE CONNECTED";
-        pill.className = "status-pill ok";
-        if (typeof window.AetherLua.nativeEngineStatus === "function") {
-          try {
-            const s = window.AetherLua.nativeEngineStatus();
-            if (s) pill.title = String(s);
-          } catch (_) {}
-        }
-      } else {
-        pill.textContent = "BRIDGE NOT FOUND";
-        pill.className = "status-pill bad";
-        pill.title = "Check MainActivity.java: addJavascriptInterface(..., \"AetherLua\")";
-      }
-    } catch (_) {
-      pill.textContent = "ENGINE CHECK ERROR";
-      pill.className = "status-pill bad";
-    }
-  }
-  function saveCode() {
-    try {
-      localStorage.setItem("aetherLuaEditorCode", code.value);
-      $("saveState").textContent = "Saved ✓";
-      toast("Project saved on this device");
-    } catch (e) {
-      $("saveState").textContent = "Save failed";
-      toast("Save failed: device storage unavailable");
-    }
-  }
-  function runCode() {
-    if (running) {
-      toast("A script is already running");
-      return;
-    }
-    const source = code.value;
-    if (!source.trim()) {
-      toast("আগে Lua code লিখুন");
-      return;
-    }
-    showPage("run");
-    clearOutput();
-    addOutput("> Starting Lua 5.4.9…", "info");
-    $("runState").textContent = "RUNNING";
-    $("runTime").textContent = "Executing";
-    const bridge = window.AetherLua;
-    if (!bridge || typeof bridge.run !== "function") {
-      addOutput("ERROR: AetherLua JavaScript Bridge পাওয়া যায়নি।", "error");
-      addOutput('MainActivity.java-তে addJavascriptInterface(new LuaBridge(), "AetherLua") আছে কি না পরীক্ষা করুন।', "info");
-      $("runState").textContent = "BRIDGE ERROR";
-      return;
-    }
-    running = true;
-    stopRequested = false;
-    $("stopBtn").disabled = false;
-    const started = Date.now();
-    // The native Java bridge currently exposes a synchronous run(source) call.
-    // Android's current bridge must add a native cancellation method for true mid-run cancellation.
-    setTimeout(() => {
-      try {
-        if (stopRequested) {
-          addOutput("Run cancelled before native execution.", "info");
-          $("runState").textContent = "STOPPED";
-          return;
-        }
-        const result = bridge.run(source);
-        const elapsed = Date.now() - started;
-        if (result !== undefined && result !== null && String(result).length) {
-          const value = String(result);
-          value.split(/\r?\n/).forEach(line => addOutput(line));
-        } else {
-          addOutput("(No output returned by Lua engine)", "info");
-        }
-        $("runState").textContent = "FINISHED";
-        $("runTime").textContent = elapsed + " ms";
-        addOutput("✓ Execution finished", "success");
-      } catch (error) {
-        addOutput("Lua Error: " + (error && error.message ? error.message : String(error)), "error");
-        $("runState").textContent = "ERROR";
-        $("runTime").textContent = (Date.now() - started) + " ms";
-      } finally {
-        running = false;
-      }
-    }, 30);
-  }
-  function stopCode() {
-    if (!running) {
-      addOutput("No active script.", "info");
-      $("runState").textContent = "IDLE";
-      return;
-    }
-    stopRequested = true;
-    // Optional hook for a future native bridge implementation.
-    try {
-      if (window.AetherLua && typeof window.AetherLua.stop === "function") {
-        window.AetherLua.stop();
-        addOutput("Stop request sent to native engine.", "info");
-      } else {
-        addOutput("Stop requested. Current synchronous JNI run cannot be interrupted mid-execution; the native instruction limit still applies.", "info");
-      }
-    } catch (e) {
-      addOutput("Stop request failed: " + String(e), "error");
-    }
-    $("runState").textContent = "STOP REQUESTED";
-  }
-
-  $("runBtn").addEventListener("click", runCode);
-  $("saveBtn").addEventListener("click", saveCode);
-  $("sampleBtn").addEventListener("click", () => {
-    code.value = starter;
-    updateLineInfo();
-    $("saveState").textContent = "Example loaded";
-    toast("Lua example loaded");
-  });
-  $("clearCodeBtn").addEventListener("click", () => {
-    code.value = "";
-    updateLineInfo();
-    $("saveState").textContent = "Not saved";
-    code.focus();
-  });
-  $("fontUp").addEventListener("click", () => {
-    fontSize = Math.min(22, fontSize + 1);
-    code.style.fontSize = fontSize + "px";
-  });
-  $("fontDown").addEventListener("click", () => {
-    fontSize = Math.max(10, fontSize - 1);
-    code.style.fontSize = fontSize + "px";
-  });
-  $("backBtn").addEventListener("click", () => showPage("editor"));
-  $("stopBtn").addEventListener("click", stopCode);
-  $("clearOutputBtn").addEventListener("click", clearOutput);
-  code.addEventListener("input", () => {
-    updateLineInfo();
-    $("saveState").textContent = "Unsaved changes";
-  });
-  code.addEventListener("keydown", event => {
-    if (event.key === "Tab") {
-      event.preventDefault();
-      const start = code.selectionStart, end = code.selectionEnd;
-      code.setRangeText("    ", start, end, "end");
-      updateLineInfo();
-    }
-  });
-
-  try {
-    const saved = localStorage.getItem("aetherLuaEditorCode");
-    code.value = saved !== null ? saved : starter;
-    $("saveState").textContent = saved !== null ? "Saved project loaded" : "Starter project";
-  } catch (_) {
-    code.value = starter;
-  }
-  updateLineInfo();
-  checkEngine();
-  // Recheck after WebView has completed page setup.
-  setTimeout(checkEngine, 350);
+function draw()
+ game.background("#79c9f2")
+ game.circle(690,75,38,"#ffe27a")
+ game.rect(0,370,800,80,"#5dbb68")
+ for _,p in ipairs(platforms) do game.rect(p.x,p.y,p.w,p.h,"#79543b");game.rect(p.x,p.y,p.w,5,"#a4df73") end
+ game.rect(player.x,player.y,player.w,player.h,"#e83d54")
+ game.rect(player.x+8,player.y+10,8,8,"#ffffff");game.rect(player.x+27,player.y+10,8,8,"#ffffff")
+ game.text("AETHER MINE 2D",20,35,23,"#ffffff")
+end
+print("2D example loaded")`;
+const code=$('code'),canvas=$('gameCanvas'),ctx=canvas.getContext('2d');
+let active=false,raf=0,keys=new Set(),projects={};
+const STORE='aetherMineLuaStudioProjectsV2';
+function toast(s){const t=$('toast');t.textContent=s;t.style.display='block';clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.style.display='none',1800)}
+function page(name){['editor','saved','game','console'].forEach(n=>$(`${n}Page`).classList.toggle('active',n===name));if(name==='saved')renderSaved();if(name==='game')fitCanvas()}
+function log(s){const c=$('console');if(c.textContent.startsWith('AETHER MINE'))c.textContent='';c.textContent+=(c.textContent?'\n':'')+String(s);c.scrollTop=c.scrollHeight}
+function decode(s){return s.replace(/\\t/g,'\t').replace(/\\n/g,'\n').replace(/\\r/g,'\r').replace(/\\\\/g,'\\')}
+function parseResult(raw){if(!raw)return;raw.split(/\r?\n/).forEach(row=>{if(row.startsWith('@PRINT\t')){log(decode(row.slice(7)));return}if(!row.startsWith('@GAME\t'))return;const a=row.slice(6).split('\t'),cmd=a[0],v=a.slice(1).map(decode),n=i=>Number(v[i]||0);
+ if(cmd==='create'){canvas.width=Math.max(1,Math.min(4096,n(0)));canvas.height=Math.max(1,Math.min(4096,n(1)));fitCanvas()}
+ else if(cmd==='background'){ctx.fillStyle=v[0];ctx.fillRect(0,0,canvas.width,canvas.height)}
+ else if(cmd==='rect'){ctx.fillStyle=v[4];ctx.fillRect(n(0),n(1),n(2),n(3))}
+ else if(cmd==='circle'){ctx.fillStyle=v[3];ctx.beginPath();ctx.arc(n(0),n(1),Math.max(0,n(2)),0,Math.PI*2);ctx.fill()}
+ else if(cmd==='line'){ctx.strokeStyle=v[4];ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(n(0),n(1));ctx.lineTo(n(2),n(3));ctx.stroke()}
+ else if(cmd==='text'){ctx.fillStyle=v[4];ctx.font=`${Math.max(8,Math.min(100,n(3)))}px system-ui`;ctx.fillText(v[0],n(1),n(2))}
+ })}
+function fitCanvas(){/* Canvas CSS scales to the full available preview area; its drawing resolution stays game-defined. */}
+function keyString(){return [...keys].join(',')}
+function frame(){if(!active)return;try{parseResult(window.AetherLua.frame(keyString()))}catch(e){log('FRAME ERROR: '+e.message);stop();page('console');return}raf=requestAnimationFrame(frame)}
+function run(){if(!window.AetherLua||typeof AetherLua.runGame!=='function'){log('ERROR: Updated Android bridge required.');page('console');return}stop(false);$('console').textContent='';log('Starting Lua project…');page('game');try{const result=AetherLua.runGame(code.value);parseResult(result);if((result||'').includes('@PRINT\tERROR:')){log('Game start reported an error.');page('console');return}active=true;raf=requestAnimationFrame(frame);log('Run started.')}catch(e){log('RUN ERROR: '+e.message);page('console')}}
+function stop(callNative=true){active=false;if(raf)cancelAnimationFrame(raf);raf=0;keys.clear();if(callNative&&window.AetherLua&&typeof AetherLua.stopGame==='function')try{AetherLua.stopGame()}catch(_){} }
+function loadProjects(){try{projects=JSON.parse(localStorage.getItem(STORE)||'{}');if(!projects||typeof projects!=='object')projects={}}catch(_){projects={}}}
+function saveProject(){let name=$('projectName').value.trim();if(!name)name=prompt('প্রজেক্টের নাম লিখুন:','My Lua Project')||'';name=name.trim();if(!name){toast('নাম দেওয়া হয়নি');return}const key=name.toLowerCase();projects[key]={name,code:code.value,updated:new Date().toLocaleString()};try{localStorage.setItem(STORE,JSON.stringify(projects));$('projectName').value=name;renderSaved();toast('Save Done: '+name)}catch(e){toast('Save failed: storage full')}}
+function renderSaved(){loadProjects();const list=$('saveList');list.innerHTML='';const entries=Object.entries(projects);if(!entries.length){list.innerHTML='<div class="empty">এখনো কোনো প্রজেক্ট Save করা হয়নি।<br>Editor-এ গিয়ে নাম লিখে Save চাপুন।</div>';return}entries.sort((a,b)=>(b[1].updated||'').localeCompare(a[1].updated||''));entries.forEach(([key,p])=>{const row=document.createElement('div');row.className='saved-item';const open=document.createElement('button');open.className='saved-open';open.textContent=p.name;const meta=document.createElement('span');meta.className='saved-meta';meta.textContent='Saved • '+(p.updated||'');open.appendChild(meta);open.onclick=()=>{code.value=p.code||'';$('projectName').value=p.name;page('editor');toast('প্রজেক্ট খুলেছে: '+p.name)};const del=document.createElement('button');del.className='danger';del.textContent='Delete';del.onclick=()=>{if(confirm('এই প্রজেক্টটি মুছে ফেলবে?')){delete projects[key];localStorage.setItem(STORE,JSON.stringify(projects));renderSaved()}};row.append(open,del);list.appendChild(row)})}
+$('runBtn').onclick=run;$('saveBtn').onclick=saveProject;$('stopBtn').onclick=()=>{stop();log('Project stopped.');page('console')};$('sampleBtn').onclick=()=>{code.value=starter;$('projectName').value='2D Platformer Example';toast('Example loaded')};$('clearBtn').onclick=()=>{code.value='';toast('Editor cleared')};
+$('editorTab').onclick=()=>page('editor');$('savedTab').onclick=()=>page('saved');$('gameTab').onclick=()=>page('game');$('consoleTab').onclick=()=>page('console');$('savedRefresh').onclick=renderSaved;$('previewConsoleBtn').onclick=()=>page('console');$('consoleEditorBtn').onclick=()=>page('editor');$('consolePreviewBtn').onclick=()=>page('game');$('clearLogBtn').onclick=()=>$('console').textContent='Console cleared.';
+// Only physical keyboard events are forwarded. No extra on-screen game controls are injected.
+function mapKey(e){const k=e.key.toLowerCase();if(k==='arrowleft'||k==='a')return'left';if(k==='arrowright'||k==='d')return'right';if(k===' '||k==='arrowup'||k==='w')return'jump';return null}
+window.addEventListener('keydown',e=>{const k=mapKey(e);if(k){e.preventDefault();keys.add(k)}});window.addEventListener('keyup',e=>{const k=mapKey(e);if(k)keys.delete(k)});window.addEventListener('blur',()=>keys.clear());window.addEventListener('resize',fitCanvas);window.addEventListener('orientationchange',()=>setTimeout(fitCanvas,150));
+loadProjects();try{code.value=localStorage.getItem('aetherLuaGameCode')||starter}catch(_){code.value=starter}try{if(window.AetherLua&&AetherLua.nativeEngineStatus)$('status').textContent=AetherLua.nativeEngineStatus();else $('status').textContent='BRIDGE CHECK'}catch(e){$('status').textContent='ENGINE CHECK ERROR'}
 })();
 </script>
-</body>
-</html>
+</body></html>
