@@ -3,6 +3,7 @@
 #include <sstream>
 #include <mutex>
 #include <cmath>
+#include <unordered_set>
 
 extern "C" {
 #include "lua.h"
@@ -21,6 +22,8 @@ static const char* UI_PREFIX = "@UI\t";
 static float gAxisX = 0.0f, gAxisY = 0.0f;
 static float pointerX = 0.0f, pointerY = 0.0f;
 static bool pointerIsDown = false;
+static bool pointerPressed = false, pointerReleased = false;
+static std::unordered_set<std::string> previousKeys, previousActions;
 
 static std::string escapeField(const std::string& s) {
     std::string out;
@@ -180,6 +183,28 @@ static int inputAction(lua_State* L) {
     lua_pushboolean(L, tableFlag(L, "__aether_actions", id));
     return 1;
 }
+static int inputPressed(lua_State* L) {
+    const char* key = luaL_checkstring(L,1);
+    lua_pushboolean(L, tableFlag(L, "__aether_pressed", key));
+    return 1;
+}
+static int inputReleased(lua_State* L) {
+    const char* key = luaL_checkstring(L,1);
+    lua_pushboolean(L, tableFlag(L, "__aether_released", key));
+    return 1;
+}
+static int pushPointerInfo(lua_State* L) {
+    lua_createtable(L,0,5);
+    lua_pushnumber(L,pointerX); lua_setfield(L,-2,"x");
+    lua_pushnumber(L,pointerY); lua_setfield(L,-2,"y");
+    lua_pushboolean(L,pointerIsDown); lua_setfield(L,-2,"down");
+    lua_pushboolean(L,pointerIsDown); lua_setfield(L,-2,"active");
+    lua_pushboolean(L,pointerPressed); lua_setfield(L,-2,"pressed");
+    lua_pushboolean(L,pointerReleased); lua_setfield(L,-2,"released");
+    return 1;
+}
+static int inputPointer(lua_State* L) { return pushPointerInfo(L); }
+static int inputTouch(lua_State* L) { return pushPointerInfo(L); }
 static int inputAxisX(lua_State* L) { lua_pushnumber(L,gAxisX); return 1; }
 static int inputAxisY(lua_State* L) { lua_pushnumber(L,gAxisY); return 1; }
 static int inputPointerX(lua_State* L) { lua_pushnumber(L,pointerX); return 1; }
@@ -237,6 +262,10 @@ static void registerGameApi(lua_State* L) {
     lua_newtable(L);
     lua_pushcfunction(L,inputDown);        lua_setfield(L,-2,"down");
     lua_pushcfunction(L,inputAction);      lua_setfield(L,-2,"action");
+    lua_pushcfunction(L,inputPressed);     lua_setfield(L,-2,"pressed");
+    lua_pushcfunction(L,inputReleased);    lua_setfield(L,-2,"released");
+    lua_pushcfunction(L,inputTouch);       lua_setfield(L,-2,"touch");
+    lua_pushcfunction(L,inputPointer);     lua_setfield(L,-2,"pointer");
     lua_pushcfunction(L,inputAxisX);       lua_setfield(L,-2,"axisX");
     lua_pushcfunction(L,inputAxisY);       lua_setfield(L,-2,"axisY");
     lua_pushcfunction(L,inputPointerX);    lua_setfield(L,-2,"pointerX");
@@ -297,18 +326,55 @@ static jstring toJava(JNIEnv* env, const std::string& s) {
     return env->NewStringUTF(s.c_str());
 }
 
+static std::unordered_set<std::string> parseCsvSet(const std::string& csv) {
+    std::unordered_set<std::string> values;
+    size_t start=0;
+    while (start<csv.size()) {
+        size_t end=csv.find(',',start);
+        if (end==std::string::npos) end=csv.size();
+        if (end>start) values.insert(csv.substr(start,end-start));
+        start=end+1;
+    }
+    return values;
+}
+static void setBoolSetTable(lua_State* L, const char* name,
+                            const std::unordered_set<std::string>& values) {
+    lua_newtable(L);
+    for (const auto& value: values) {
+        lua_pushboolean(L,1);
+        lua_setfield(L,-2,value.c_str());
+    }
+    lua_setglobal(L,name);
+}
 static void applyInput(const std::string& keys, const std::string& actions,
                        float ax, float ay, float px, float py, bool down) {
-    gAxisX=ax; gAxisY=ay; pointerX=px; pointerY=py; pointerIsDown=down;
+    bool wasPointerDown=pointerIsDown;
+    gAxisX=ax; gAxisY=ay; pointerX=px; pointerY=py;
+    pointerPressed = down && !wasPointerDown;
+    pointerReleased = !down && wasPointerDown;
+    pointerIsDown=down;
     if (gameState) {
+        auto currentKeys=parseCsvSet(keys);
+        auto currentActions=parseCsvSet(actions);
+        std::unordered_set<std::string> pressed, released;
+        for (const auto& key: currentKeys) if (!previousKeys.count(key)) pressed.insert(key);
+        for (const auto& key: previousKeys) if (!currentKeys.count(key)) released.insert(key);
+        for (const auto& id: currentActions) if (!previousActions.count(id)) pressed.insert(id);
+        for (const auto& id: previousActions) if (!currentActions.count(id)) released.insert(id);
+        if (pointerPressed) { pressed.insert("pointer"); pressed.insert("touch"); }
+        if (pointerReleased) { released.insert("pointer"); released.insert("touch"); }
         setCsvTable(gameState,"__aether_keys",keys);
         setCsvTable(gameState,"__aether_actions",actions);
+        setBoolSetTable(gameState,"__aether_pressed",pressed);
+        setBoolSetTable(gameState,"__aether_released",released);
+        previousKeys=std::move(currentKeys);
+        previousActions=std::move(currentActions);
     }
 }
 
 extern "C" JNIEXPORT jstring JNICALL
 Java_com_aethermine_lua_MainActivity_nativeEngineStatus(JNIEnv* env, jclass) {
-    return env->NewStringUTF("AETHER MINE Lua 5.4 V3 Graphics Engine Ready");
+    return env->NewStringUTF("AETHER MINE Lua 5.4 V3 Input + Graphics Engine Ready");
 }
 
 extern "C" JNIEXPORT jstring JNICALL
@@ -358,11 +424,15 @@ Java_com_aethermine_lua_MainActivity_runLuaGame(JNIEnv* env, jclass, jstring sou
     if (gameState) { lua_close(gameState); gameState=nullptr; }
     gameOutput.str(""); gameOutput.clear(); gameCommands.str(""); gameCommands.clear();
     gAxisX=gAxisY=pointerX=pointerY=0; pointerIsDown=false;
+    pointerPressed=pointerReleased=false;
+    previousKeys.clear(); previousActions.clear();
     gameState=luaL_newstate();
     if (!gameState) return env->NewStringUTF("@PRINT\tERROR: Cannot create Lua game state.\n");
     restrictLibraries(gameState);
     setCsvTable(gameState,"__aether_keys","");
     setCsvTable(gameState,"__aether_actions","");
+    setBoolSetTable(gameState,"__aether_pressed",{});
+    setBoolSetTable(gameState,"__aether_released",{});
     setInstructionBudget(gameState);
     int status=luaL_loadbuffer(gameState,code.c_str(),code.size(),"AETHER_MINE_GAME");
     if (status==LUA_OK) status=lua_pcall(gameState,0,0,0);
