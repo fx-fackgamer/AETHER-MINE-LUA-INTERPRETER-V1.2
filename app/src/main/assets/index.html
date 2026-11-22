@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>AETHER MINE LUA GAME STUDIO V2.1</title>
+<title>AETHER MINE LUA ENGINE V3</title>
 <style>
 :root{--bg:#f5f7fb;--paper:#fff;--ink:#172033;--muted:#718096;--line:#e2e8f0;--blue:#2864dc;--blue2:#eaf1ff;--green:#14845c;--red:#c43b50;--dark:#101827}
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,sans-serif}
@@ -22,8 +22,6 @@ body{height:100dvh}button,input,textarea{font:inherit}button{border:1px solid va
 .log{flex:1;min-height:0;margin:10px;border-radius:11px;background:#101827;color:#d3f4df;padding:12px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.6 ui-monospace,monospace}
 .modal-back{display:none;position:fixed;inset:0;z-index:20;background:#17203366;align-items:flex-end;justify-content:center}.modal-back.show{display:flex}.modal{width:100%;max-height:88%;overflow:auto;background:#fff;border-radius:20px 20px 0 0;padding:16px;box-shadow:0 -10px 40px #0002}.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.modal-head strong{font-size:15px}.choice-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.choice{padding:13px;text-align:left;min-height:65px}.choice b{display:block;font-size:13px}.choice small{display:block;color:var(--muted);font-size:10px;margin-top:4px}.setting-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--line);gap:10px;font-size:12px}.setting-row input{width:100px}.toast{position:fixed;z-index:30;bottom:16px;left:50%;transform:translateX(-50%);background:#172033;color:#fff;border-radius:10px;padding:10px 14px;font-size:11px;display:none;max-width:90vw}
 @media(orientation:landscape){.top{height:44px}.brand{font-size:13px}.home{gap:10px}.hero{margin-bottom:2px}.hero-mark{width:48px;height:48px;font-size:25px}.hero h1{font-size:19px}.home-option{min-height:68px;padding:10px}.home-option .ico{width:40px;height:40px}.head{height:40px}.toolbar{padding:5px 8px}.name-row{padding:5px 8px}.editor-shell{margin:0 8px 8px}.code,.gutter{font-size:12px}.modal-back{align-items:center}.modal{width:min(560px,85vw);border-radius:18px;max-height:90%}}
-
-/* V2.1 Run page + touch input */
 #previewPane.run-fullscreen{position:fixed!important;inset:0!important;z-index:15!important;background:#101827!important;display:flex!important}
 #previewPane.run-fullscreen>.head{background:#101827;color:#fff;border-color:#29364b}
 #previewPane.run-fullscreen .preview{padding:8px 8px 62px;position:relative;overflow:hidden}
@@ -46,15 +44,14 @@ body{height:100dvh}button,input,textarea{font:inherit}button{border:1px solid va
 @media(orientation:portrait){#previewPane.run-fullscreen>.head{height:42px}.run-settings{left:0;right:0;bottom:0;height:48%;border-radius:18px 18px 0 0}.preview.settings-open #gameCanvas{height:52%;width:100%;align-self:flex-start}.preview.settings-open #touchLayer{height:52%}.preview.settings-open .run-tools{bottom:calc(48% + 8px)}}
 @media(orientation:landscape){#previewPane.run-fullscreen{flex-direction:row!important}#previewPane.run-fullscreen>.head{position:absolute;top:0;left:0;right:0;height:38px;z-index:2}#previewPane.run-fullscreen .preview{margin-top:38px;width:100%;height:calc(100% - 38px)}.run-settings{left:0;top:38px;bottom:0;width:min(310px,42vw);border-radius:0 16px 0 0}.preview.settings-open #gameCanvas{width:calc(100% - min(310px,42vw));height:100%;margin-left:min(310px,42vw)}.preview.settings-open #touchLayer{left:min(310px,42vw)}.preview.settings-open .run-tools{left:calc(min(310px,42vw) + 12px)}}
 @media(max-width:420px){.touch-joystick{width:96px;height:96px}.touch-knob{width:40px;height:40px;left:26px;top:26px}.touch-buttons button{width:54px;height:54px}}
-
 </style>
 </head>
 <body>
 <div id="app">
-<header class="top"><div class="brand">λ AETHER MINE <small>LUA GAME STUDIO · V2.1</small></div><div class="status" id="engineStatus">READY</div></header>
+<header class="top"><div class="brand">λ AETHER MINE <small>LUA ENGINE · V3</small></div><div class="status" id="engineStatus">READY</div></header>
 
 <section class="screen home active" id="homeScreen">
- <div class="hero"><div class="hero-mark">λ</div><h1>AETHER MINE</h1><p>LUA GAME STUDIO V2.1</p></div>
+ <div class="hero"><div class="hero-mark">λ</div><h1>AETHER MINE</h1><p>LUA ENGINE V3</p></div>
  <button class="home-option" id="goEditor"><span class="ico">⌨</span><span><strong>LUA CODE EDITOR</strong><small>Write · Run · Save · Debug · Apply</small></span></button>
  <button class="home-option" id="goStart"><span class="ico">🎮</span><span><strong>GAME START</strong><small>Launch your applied games and apps</small></span></button>
 </section>
@@ -69,7 +66,7 @@ body{height:100dvh}button,input,textarea{font:inherit}button{border:1px solid va
  </div>
  <div class="screen" id="savedPane"><div class="head"><strong>SAVE DONE · SAVED PROJECTS</strong><button id="refreshSaved">↻ Refresh</button></div><div class="panel" id="savedList"></div></div>
  <div class="screen" id="previewPane"><div class="head"><strong id="runTitle">PREVIEW / RUN</strong><div class="right"><button id="reloadBtn">↻ Reload</button><button id="stopBtn">■ Stop</button><button id="exitRunBtn">× Close</button></div></div><div class="preview" id="runStage"><canvas id="gameCanvas" width="800" height="450"></canvas><div id="touchLayer"><div class="touch-joystick" id="touchJoy"><div class="touch-knob" id="touchKnob"></div></div><div class="touch-buttons" id="touchButtons"><button data-touch="jump">JUMP</button><button data-touch="action">ACT</button></div><div class="touch-directions" id="touchDirections"><span></span><button data-touch="up">▲</button><span></span><button data-touch="left">◀</button><button data-touch="down">▼</button><button data-touch="right">▶</button><span></span><button data-touch="back">BACK</button><span></span></div><div id="pointerCursor"></div></div><div class="run-tools"><button id="folderSettingsBtn">▣ Folder Settings</button></div><div class="run-settings" id="runSettings"><div class="setting-title"><span id="runSettingsTitle">FOLDER SETTINGS</span><button id="closeRunSettings">×</button></div><div id="controlMenu"><button class="setting-choice" data-run-control="jj"><b>j.j — Joystick + Jump</b><small>Virtual joystick এবং Jump button</small></button><button class="setting-choice" data-run-control="abrl"><b>ABRL — Directional controls</b><small>Forward · Backward · Right · Left · Up · Down</small></button><button class="setting-choice" data-run-control="ja"><b>j.A — Joystick + ABRL</b><small>Joystick, Jump এবং সব Direction</small></button><button class="setting-choice" data-run-control="mm"><b>m.m — Mouse tools</b><small>Pointer · Path · Hand · Select</small></button><button class="setting-choice" data-run-control="cc"><b>C.C — Command shortcuts</b><small>Ctrl+C · Ctrl+V · Ctrl+Z · Ctrl+S</small></button><button class="setting-choice" data-run-control="kb"><b>K.B — Keyboard</b><small>Keyboard এবং Arrow/WASD input</small></button></div><div class="subpanel" id="controlSubpanel"><button id="backControlMenu">← Back</button><div id="controlSubContent"></div></div></div></div></div>
- <div class="screen" id="consolePane"><div class="head"><strong>CONSOLE / ERROR</strong><button id="clearConsole">Clear</button></div><div class="log" id="consoleLog">AETHER MINE LUA GAME STUDIO V2.1 ready.</div></div>
+ <div class="screen" id="consolePane"><div class="head"><strong>CONSOLE / ERROR</strong><button id="clearConsole">Clear</button></div><div class="log" id="consoleLog">AETHER MINE LUA ENGINE V3 ready.</div></div>
 </section>
 
 <section class="screen" id="startScreen"><div class="head"><strong>GAME START · APPLIED PROJECTS</strong><button id="startHome">⌂ Home</button></div><div class="panel" id="appliedList"></div></section>
@@ -95,7 +92,7 @@ body{height:100dvh}button,input,textarea{font:inherit}button{border:1px solid va
 (()=>{'use strict';
 const $=id=>document.getElementById(id);
 const STORE='aether_mine_lua_v21_projects',APPLIED='aether_mine_lua_v21_applied',SETTINGS='aether_mine_lua_v21_settings';
-const starter=`-- AETHER MINE LUA GAME STUDIO V2.1
+const starter=`-- AETHER MINE LUA ENGINE V3
 -- Simple 2D test scene
 
 game.create(800, 450)
@@ -112,7 +109,7 @@ function draw()
   game.circle(690, 70, 35, "#ffe36b")
   game.rect(0, 390, 800, 60, "#58a968")
   game.rect(x, y, 45, 55, "#e74458")
-  game.text("AETHER MINE V2.1", 20, 35, 24, "#ffffff")
+  game.text("AETHER MINE V3", 20, 35, 24, "#ffffff")
   game.text("Use keyboard arrows to move", 20, 65, 15, "#ffffff")
 end
 print("Lua 5.4 project ready")`;
@@ -125,17 +122,90 @@ function showScreen(id){document.querySelectorAll('#app>.screen').forEach(x=>x.c
 function showEditorPane(id){document.querySelectorAll('#editorScreen>.screen').forEach(x=>x.classList.remove('active'));$(id).classList.add('active');document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));if(id==='savedPane')renderSaved();if(id==='previewPane'){}}
 function log(s){let el=$('consoleLog');if(el.textContent.startsWith('AETHER MINE'))el.textContent='';el.textContent+=(el.textContent?'\n':'')+String(s);el.scrollTop=el.scrollHeight}
 function lineSync(){let n=code.value.split('\n').length;$('lineNumbers').textContent=Array.from({length:n},(_,i)=>i+1).join('\n')}
-function syncGutter(){ $('lineNumbers').scrollTop=code.scrollTop; }
+function syncGutter(){$('lineNumbers').scrollTop=code.scrollTop;}
 function save(){let name=$('projectName').value.trim();if(!name){toast('আগে Project Name লিখুন');return}let key=name.toLocaleLowerCase();if(projects[key]){toast('এই নামে Project আগে থেকেই আছে। নতুন নাম দিন।');return}projects[key]={name,code:code.value,created:Date.now()};persist();renderSaved();toast('Save Done: '+name)}
 function renderSaved(){readStore();let list=$('savedList');list.innerHTML='';let entries=Object.entries(projects).sort((a,b)=>b[1].created-a[1].created);if(!entries.length){list.innerHTML='<div class="empty">এখনো কোনো Project Save করা হয়নি।</div>';return}for(const [key,p] of entries){let card=document.createElement('div');card.className='project-card';let title=document.createElement('div');title.className='project-title';title.textContent=p.name;let meta=document.createElement('div');meta.className='project-meta';meta.textContent='Lua Project · '+new Date(p.created).toLocaleString();let actions=document.createElement('div');actions.className='actions';let open=document.createElement('button');open.className='soft';open.textContent='Open Editor';open.onclick=()=>{code.value=p.code;$('projectName').value='';lineSync();showEditorPane('editorPane');toast('কোড Editor-এ খুলেছে। পরিবর্তন করে নতুন নামে Save করো।')};let run=document.createElement('button');run.className='primary';run.textContent='Run';run.onclick=()=>{code.value=p.code;$('projectName').value=p.name;runCode()};let del=document.createElement('button');del.className='danger';del.textContent='Delete';del.onclick=()=>{if(confirm('এই Project মুছে ফেলবে?')){delete projects[key];applied=applied.filter(x=>x!==key);persist();renderSaved()}};actions.append(run,open,del);card.append(title,meta,actions);list.append(card)}}
 function renderApplied(){readStore();let list=$('appliedList');list.innerHTML='';let valid=applied.filter(k=>projects[k]);if(!valid.length){list.innerHTML='<div class="empty">এখনো Apply করা Project নেই। Editor-এ Project খুলে Apply চাপো।</div>';return}valid.forEach(key=>{let p=projects[key],card=document.createElement('div');card.className='project-card';let title=document.createElement('div');title.className='project-title';title.textContent=p.name;let meta=document.createElement('div');meta.className='project-meta';meta.textContent='Applied Project · Tap to launch';let actions=document.createElement('div');actions.className='actions';let del=document.createElement('button');del.className='danger';del.textContent='Delete';del.onclick=()=>{applied=applied.filter(x=>x!==key);persist();renderApplied()};card.onclick=(e)=>{if(e.target!==del){code.value=p.code;$('projectName').value=p.name;showScreen('editorScreen');showEditorPane('previewPane');runCode()}};actions.append(del);card.append(title,meta,actions);list.append(card)})}
 function applyProject(){let name=$('projectName').value.trim(),key=name.toLocaleLowerCase();if(!name||!projects[key]){toast('আগে Project Save করো, তারপর Apply');return}if(!applied.includes(key))applied.push(key);persist();toast(name+' এখন GAME START-এ প্রস্তুত')}
 function decode(s){return s.replace(/\\t/g,'\t').replace(/\\n/g,'\n').replace(/\\r/g,'\r').replace(/\\\\/g,'\\')}
-function parse(raw){if(!raw)return;uiButtons=[];raw.split(/\r?\n/).forEach(row=>{if(row.startsWith('@PRINT\t')){log(decode(row.slice(7)));return}if(row.startsWith('@GAME\t')){let a=row.slice(6).split('\t'),cmd=a[0],v=a.slice(1).map(decode),n=i=>Number(v[i]||0);if(cmd==='create'){canvas.width=Math.max(1,Math.min(4096,n(0)));canvas.height=Math.max(1,Math.min(4096,n(1)))}else if(cmd==='background'){ctx.fillStyle=v[0];ctx.fillRect(0,0,canvas.width,canvas.height)}else if(cmd==='rect'){ctx.fillStyle=v[4];ctx.fillRect(n(0),n(1),n(2),n(3))}else if(cmd==='circle'){ctx.fillStyle=v[3];ctx.beginPath();ctx.arc(n(0),n(1),Math.max(0,n(2)),0,Math.PI*2);ctx.fill()}else if(cmd==='line'){ctx.strokeStyle=v[4];ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(n(0),n(1));ctx.lineTo(n(2),n(3));ctx.stroke()}else if(cmd==='text'){ctx.fillStyle=v[4];ctx.font=`${Math.max(8,Math.min(100,n(3)))}px system-ui`;ctx.fillText(v[0],n(1),n(2))}return}if(!row.startsWith('@UI\t'))return;let a=row.slice(4).split('\t'),cmd=a[0],v=a.slice(1).map(decode),n=i=>Number(v[i]||0);if(cmd==='panel'){ctx.fillStyle=v[5]||'#202838';ctx.fillRect(n(1),n(2),n(3),n(4))}else if(cmd==='text'){ctx.fillStyle=v[5]||'#fff';ctx.font=`${Math.max(8,Math.min(100,n(4)))}px system-ui`;ctx.fillText(v[1],n(2),n(3))}else if(cmd==='button'){let b={id:v[0],label:v[1],x:n(2),y:n(3),w:n(4),h:n(5)};uiButtons.push(b);ctx.fillStyle='#2864dc';ctx.fillRect(b.x,b.y,b.w,b.h);ctx.strokeStyle='#fff';ctx.strokeRect(b.x,b.y,b.w,b.h);ctx.fillStyle='#fff';ctx.font='16px system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(b.label,b.x+b.w/2,b.y+b.h/2);ctx.textAlign='start';ctx.textBaseline='alphabetic'}})}
-function runCode(){if(!window.AetherLua||typeof AetherLua.runGame!=='function'){log('ERROR: Android Lua Bridge V2.1 compatible build required.');showEditorPane('consolePane');return}stop(false);$('consoleLog').textContent='';log('Starting Lua project…');showEditorPane('previewPane');$('previewPane').classList.add('run-fullscreen');$('runTitle').textContent=$('projectName').value.trim()||'AETHER MINE · RUN';try{let result=AetherLua.runGame(code.value);parse(result);if((result||'').includes('@PRINT\tERROR:')){log('Lua runtime reported an error.');$('previewPane').classList.remove('run-fullscreen');showEditorPane('consolePane');return}active=true;raf=requestAnimationFrame(frame);log('Run started.')}catch(e){log('RUN ERROR: '+e.message);$('previewPane').classList.remove('run-fullscreen');showEditorPane('consolePane')}}
+const imageCache = new Map();
+function drawGameImage(src,x,y,w,h,crop=null){
+ if(!src)return;
+ let img=imageCache.get(src);
+ if(!img){
+  img=new Image();
+  imageCache.set(src,img);
+  img.onload=()=>{ if(active) requestAnimationFrame(()=>{}); };
+  img.onerror=()=>log('IMAGE ERROR: '+src);
+  img.src=src;
+ }
+ if(!img.complete||!img.naturalWidth)return;
+ try{
+  if(crop&&crop.sw>0&&crop.sh>0)
+   ctx.drawImage(img,crop.sx,crop.sy,crop.sw,crop.sh,x,y,w,h);
+  else
+   ctx.drawImage(img,x,y,w,h);
+ }catch(e){log('IMAGE DRAW ERROR: '+e.message)}
+}
+function parse(raw){
+ if(!raw)return;
+ uiButtons=[];
+ ctx.setTransform(1,0,0,1,0,0);
+ raw.split(/\r?\n/).forEach(row=>{
+  if(row.startsWith('@PRINT\t')){log(decode(row.slice(7)));return}
+  if(row.startsWith('@GAME\t')){
+   let a=row.slice(6).split('\t'),cmd=a[0],v=a.slice(1).map(decode),n=i=>Number(v[i]||0);
+   if(cmd==='create'){
+    canvas.width=Math.max(1,Math.min(4096,n(0)));
+    canvas.height=Math.max(1,Math.min(4096,n(1)));
+    ctx.setTransform(1,0,0,1,0,0);
+   }else if(cmd==='background'){
+    ctx.setTransform(1,0,0,1,0,0);
+    ctx.fillStyle=v[0];ctx.fillRect(0,0,canvas.width,canvas.height);
+   }else if(cmd==='rect'){
+    ctx.fillStyle=v[4];ctx.fillRect(n(0),n(1),n(2),n(3));
+   }else if(cmd==='circle'){
+    ctx.fillStyle=v[3];ctx.beginPath();ctx.arc(n(0),n(1),Math.max(0,n(2)),0,Math.PI*2);ctx.fill();
+   }else if(cmd==='line'){
+    ctx.strokeStyle=v[4];ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(n(0),n(1));ctx.lineTo(n(2),n(3));ctx.stroke();
+   }else if(cmd==='text'){
+    ctx.fillStyle=v[4];ctx.font=`${Math.max(8,Math.min(100,n(3)))}px system-ui`;ctx.fillText(v[0],n(1),n(2));
+   }else if(cmd==='triangle'){
+    ctx.fillStyle=v[6]||'#ffffff';ctx.beginPath();
+    ctx.moveTo(n(0),n(1));ctx.lineTo(n(2),n(3));ctx.lineTo(n(4),n(5));
+    ctx.closePath();ctx.fill();
+   }else if(cmd==='image'){
+    drawGameImage(v[0],n(1),n(2),n(3),n(4));
+   }else if(cmd==='sprite'){
+    drawGameImage(v[0],n(1),n(2),n(3),n(4),
+     {sx:n(5),sy:n(6),sw:n(7),sh:n(8)});
+   }else if(cmd==='camera'){
+    const x=n(0),y=n(1),zoom=Math.max(.1,Math.min(8,n(2)||1));
+    ctx.setTransform(zoom,0,0,zoom,-x*zoom,-y*zoom);
+   }
+   return;
+  }
+  if(!row.startsWith('@UI\t'))return;
+  // UI stays in screen coordinates, independent of the world camera.
+  ctx.setTransform(1,0,0,1,0,0);
+  let a=row.slice(4).split('\t'),cmd=a[0],v=a.slice(1).map(decode),n=i=>Number(v[i]||0);
+  if(cmd==='panel'){
+   ctx.fillStyle=v[5]||'#202838';ctx.fillRect(n(1),n(2),n(3),n(4));
+  }else if(cmd==='text'){
+   ctx.fillStyle=v[5]||'#fff';ctx.font=`${Math.max(8,Math.min(100,n(4)))}px system-ui`;ctx.fillText(v[1],n(2),n(3));
+  }else if(cmd==='button'){
+   let b={id:v[0],label:v[1],x:n(2),y:n(3),w:n(4),h:n(5)};uiButtons.push(b);
+   ctx.fillStyle='#2864dc';ctx.fillRect(b.x,b.y,b.w,b.h);
+   ctx.strokeStyle='#fff';ctx.strokeRect(b.x,b.y,b.w,b.h);
+   ctx.fillStyle='#fff';ctx.font='16px system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
+   ctx.fillText(b.label,b.x+b.w/2,b.y+b.h/2);ctx.textAlign='start';ctx.textBaseline='alphabetic';
+  }
+ });
+ ctx.setTransform(1,0,0,1,0,0);
+}
+function runCode(){if(!window.AetherLua||typeof AetherLua.runGame!=='function'){log('ERROR: Android Lua Bridge V3 compatible build required.');showEditorPane('consolePane');return}stop(false);$('consoleLog').textContent='';log('Starting Lua project…');showEditorPane('previewPane');$('previewPane').classList.add('run-fullscreen');$('runTitle').textContent=$('projectName').value.trim()||'AETHER MINE · RUN';try{let result=AetherLua.runGame(code.value);parse(result);if((result||'').includes('@PRINT\tERROR:')){log('Lua runtime reported an error.');$('previewPane').classList.remove('run-fullscreen');showEditorPane('consolePane');return}active=true;raf=requestAnimationFrame(frame);log('Run started.')}catch(e){log('RUN ERROR: '+e.message);$('previewPane').classList.remove('run-fullscreen');showEditorPane('consolePane')}}
 function frame(){if(!active)return;try{let result;if(typeof AetherLua.frameInput==='function')result=AetherLua.frameInput([...keys].join(','),axisX,axisY,pointer.x,pointer.y,pointer.down,[...actions].join(','));else result=AetherLua.frame([...keys].join(','));parse(result)}catch(e){log('FRAME ERROR: '+e.message);stop();$('previewPane').classList.remove('run-fullscreen');showEditorPane('consolePane');return}raf=requestAnimationFrame(frame)}
 function stop(callNative=true){active=false;if(raf)cancelAnimationFrame(raf);raf=0;keys.clear();actions.clear();axisX=axisY=0;pointer.down=false;if(callNative&&window.AetherLua&&AetherLua.stopGame)try{AetherLua.stopGame()}catch(e){}}
-
 function setZoom(v){settings.zoom=Math.max(10,Math.min(24,v));code.style.fontSize=settings.zoom+'px';persist()}
 $('goEditor').onclick=()=>{showScreen('editorScreen');showEditorPane('editorPane')};$('goStart').onclick=()=>{renderApplied();showScreen('startScreen')};$('backHome').onclick=()=>showScreen('homeScreen');$('startHome').onclick=()=>showScreen('homeScreen');
 document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>showEditorPane(b.dataset.page));
@@ -146,10 +216,8 @@ $('refreshSaved').onclick=renderSaved;$('clearConsole').onclick=()=>$('consoleLo
 document.querySelectorAll('[data-control]').forEach(b=>b.onclick=()=>{settings.control=b.dataset.control;persist();$('controlProfile').textContent=b.querySelector('b').textContent;applyControlProfile();toast('Control profile selected')});
 code.addEventListener('input',lineSync);code.addEventListener('scroll',syncGutter);code.addEventListener('keydown',e=>{if(e.key==='Tab'){e.preventDefault();let a=code.selectionStart,b=code.selectionEnd;code.setRangeText('    ',a,b,'end');lineSync()}});
 function mapKey(e){let k=e.key.toLowerCase();if(k==='arrowleft'||k==='a')return'left';if(k==='arrowright'||k==='d')return'right';if(k===' '||k==='arrowup'||k==='w')return'jump';if(k==='arrowdown'||k==='s')return'down';return null}
-window.addEventListener('keydown',e=>{let k=mapKey(e);if(k){e.preventDefault();keys.add(k)}});window.addEventListener('keyup',e=>{let k=mapKey(e);if(k)keys.delete(k)});window.addEventListener('blur',()=>keys.clear());
-
-// Run-page folder settings and live touch input
-function openControlSub(id){$('controlMenu').style.display='none';$('controlSubpanel').classList.add('active');let names={jj:'j.j — Joystick + Jump',abrl:'ABRL — Directional controls',ja:'j.A — Combined controls',mm:'m.m — Mouse tools',cc:'C.C — Command shortcuts',kb:'K.B — Keyboard'};$('runSettingsTitle').textContent=names[id]||'CONTROL SETTINGS';let descriptions={jj:'Joystick ধরে টেনে চলাচল করো। JUMP বোতাম input.down("jump") চালাবে।',abrl:'▲ ▼ ◀ ▶ এবং BACK বোতাম ব্যবহার করো। Up/Down/Left/Right/Back input key পাঠানো হবে।',ja:'Joystick এবং Directional বোতাম একসঙ্গে চালু থাকবে।',mm:'Run canvas-এ টাচ করলে pointerX(), pointerY() এবং pointerDown() পাওয়া যাবে। Path/Hand/Select হলো Pointer mode।',cc:'Ctrl+C Copy, Ctrl+V Paste, Ctrl+Z Undo, Ctrl+S Save shortcut editor-এ কাজ করে।',kb:'Arrow keys অথবা WASD দিয়ে চলাচল; Space/ArrowUp দিয়ে Jump।'};$('controlSubContent').innerHTML='<p style="font-size:12px;line-height:1.7">'+descriptions[id]+'</p><button id="useThisControl" class="primary">এই Control চালু করো</button>'; $('useThisControl').onclick=()=>{settings.control=id;persist();applyControlProfile();toast(names[id]+' enabled')};}
+window.addEventListener('keydown',e=>{let k=mapKey(e);if(k){e.preventDefault();keys.add(k)}});window.addEventListener('keyup',e=>{let k=mapKey(e);if(k)keys.delete(k)});window.addEventListener('blur',()=>{keys.clear();actions.clear();axisX=axisY=0;pointer.down=false;knob.style.transform='translate(0,0)'});document.addEventListener('visibilitychange',()=>{if(document.hidden){keys.clear();actions.clear();axisX=axisY=0;pointer.down=false;knob.style.transform='translate(0,0)'}});
+function openControlSub(id){$('controlMenu').style.display='none';$('controlSubpanel').classList.add('active');let names={jj:'j.j — Joystick + Jump',abrl:'ABRL — Directional controls',ja:'j.A — Combined controls',mm:'m.m — Mouse tools',cc:'C.C — Command shortcuts',kb:'K.B — Keyboard'};$('runSettingsTitle').textContent=names[id]||'CONTROL SETTINGS';let descriptions={jj:'Joystick ধরে টেনে চলাচল করো। JUMP বোতাম input.down("jump") চালাবে।',abrl:'▲ ▼ ◀ ▶ এবং BACK বোতাম ব্যবহার করো। Up/Down/Left/Right/Back input key পাঠানো হবে।',ja:'Joystick এবং Directional বোতাম একসঙ্গে চালু থাকবে।',mm:'Run canvas-এ টাচ করলে pointerX(), pointerY() এবং pointerDown() পাওয়া যাবে।',cc:'Ctrl+C Copy, Ctrl+V Paste, Ctrl+Z Undo, Ctrl+S Save shortcut editor-এ কাজ করে।',kb:'Arrow keys অথবা WASD দিয়ে চলাচল; Space/ArrowUp দিয়ে Jump।'};$('controlSubContent').innerHTML='<p style="font-size:12px;line-height:1.7">'+descriptions[id]+'</p><button id="useThisControl" class="primary">এই Control চালু করো</button>';$('useThisControl').onclick=()=>{settings.control=id;persist();applyControlProfile();toast(names[id]+' enabled')};}
 function applyControlProfile(){let c=settings.control;if(!['jj','abrl','ja','mm','cc','kb'].includes(c)){c='jj';settings.control=c;persist();}$('controlProfile').textContent=c.toUpperCase();$('touchJoy').style.display=(c==='jj'||c==='ja')?'block':'none';$('touchButtons').style.display=(c==='jj'||c==='ja')?'flex':'none';$('touchDirections').style.display=(c==='abrl'||c==='ja')?'grid':'none';$('pointerCursor').style.display=c==='mm'?'block':'none';}
 document.querySelectorAll('[data-run-control]').forEach(b=>b.onclick=()=>openControlSub(b.dataset.runControl));$('backControlMenu').onclick=()=>{$('controlSubpanel').classList.remove('active');$('controlMenu').style.display='block';$('runSettingsTitle').textContent='FOLDER SETTINGS'};$('folderSettingsBtn').onclick=()=>{$('runSettings').classList.toggle('open');$('runStage').classList.toggle('settings-open',$('runSettings').classList.contains('open'));$('controlSubpanel').classList.remove('active');$('controlMenu').style.display='block';$('runSettingsTitle').textContent='FOLDER SETTINGS'};$('closeRunSettings').onclick=()=>{$('runSettings').classList.remove('open');$('runStage').classList.remove('settings-open')};$('exitRunBtn').onclick=()=>{stop();$('previewPane').classList.remove('run-fullscreen');$('runSettings').classList.remove('open');$('runStage').classList.remove('settings-open');showEditorPane('editorPane')};
 function bindHold(el,key){if(!el)return;let down=e=>{e.preventDefault();keys.add(key);el.setPointerCapture?.(e.pointerId)},up=e=>{e.preventDefault();keys.delete(key)};el.addEventListener('pointerdown',down);['pointerup','pointercancel','lostpointercapture'].forEach(t=>el.addEventListener(t,up))}
@@ -157,7 +225,6 @@ document.querySelectorAll('[data-touch]').forEach(el=>bindHold(el,el.dataset.tou
 const joy=$('touchJoy'),knob=$('touchKnob');let joyPointer=null;function joyMove(e){let r=joy.getBoundingClientRect(),dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2),lim=r.width*.34,len=Math.hypot(dx,dy)||1,k=Math.min(1,lim/len);axisX=Math.max(-1,Math.min(1,dx/lim));axisY=Math.max(-1,Math.min(1,dy/lim));knob.style.transform=`translate(${dx*k}px,${dy*k}px)`}function joyEnd(){joyPointer=null;axisX=axisY=0;knob.style.transform='translate(0,0)'}joy.addEventListener('pointerdown',e=>{e.preventDefault();joyPointer=e.pointerId;joy.setPointerCapture(e.pointerId);joyMove(e)});joy.addEventListener('pointermove',e=>{if(joyPointer===e.pointerId)joyMove(e)});['pointerup','pointercancel','lostpointercapture'].forEach(t=>joy.addEventListener(t,joyEnd));
 canvas.addEventListener('pointerdown',e=>{let r=canvas.getBoundingClientRect(),sx=canvas.width/r.width,sy=canvas.height/r.height;pointer.x=(e.clientX-r.left)*sx;pointer.y=(e.clientY-r.top)*sy;pointer.down=true;for(let b of uiButtons){if(pointer.x>=b.x&&pointer.x<=b.x+b.w&&pointer.y>=b.y&&pointer.y<=b.y+b.h)actions.add(b.id)}canvas.setPointerCapture?.(e.pointerId)});canvas.addEventListener('pointermove',e=>{let r=canvas.getBoundingClientRect();pointer.x=(e.clientX-r.left)*canvas.width/r.width;pointer.y=(e.clientY-r.top)*canvas.height/r.height;$('pointerCursor').style.left=(e.clientX-r.left)+'px';$('pointerCursor').style.top=(e.clientY-r.top)+'px'});function pointerUp(){pointer.down=false;actions.clear()}['pointerup','pointercancel','lostpointercapture'].forEach(t=>canvas.addEventListener(t,pointerUp));
 window.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&['c','v','z','s'].includes(e.key.toLowerCase())){if(document.activeElement===code){if(e.key.toLowerCase()==='s'){e.preventDefault();save()}return}}});
-
 readStore();code.value=starter;lineSync();setZoom(settings.zoom);$('controlProfile').textContent=settings.control;applyControlProfile();try{$('engineStatus').textContent=window.AetherLua?.nativeEngineStatus?.()||'LUA BRIDGE CHECK'}catch(e){$('engineStatus').textContent='BRIDGE CHECK'}
 })();
 </script>
